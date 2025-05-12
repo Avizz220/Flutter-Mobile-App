@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
 import 'package:mytodoapp_frontend/features/authintication/ui/signup.dart';
 
 void main() {
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: SignUpScreen(),
+      home: Loginscreen(),
     );
   }
   

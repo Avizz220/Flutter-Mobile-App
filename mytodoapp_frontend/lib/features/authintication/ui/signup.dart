@@ -10,9 +10,10 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   @override
-  TextEditingController namecontroller = TextEditingController();
-   TextEditingController emailcontroller = TextEditingController();
+    TextEditingController namecontroller = TextEditingController();
+    TextEditingController emailcontroller = TextEditingController();
     TextEditingController passwordcontroller = TextEditingController();
+  @override
   Widget build(BuildContext context) {
     double screenwidth = MediaQuery.of(context).size.width;
     double screenheight = MediaQuery.of(context).size.height;
