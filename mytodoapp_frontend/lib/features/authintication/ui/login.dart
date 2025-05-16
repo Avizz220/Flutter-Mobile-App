@@ -21,7 +21,6 @@ class _LoginscreenState extends State<Loginscreen> {
       backgroundColor: AppColor.loginanimationcolour,
       resizeToAvoidBottomInset: true, // ✅ Added to fix keyboard overlap
       body: SafeArea(
-         
         child: Container(
           child: Column(
             children: [
@@ -82,9 +81,7 @@ class _LoginscreenState extends State<Loginscreen> {
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
+                      SizedBox(height: 15),
                       TextField(
                         controller: emailcontroller,
                         decoration: InputDecoration(
@@ -92,11 +89,15 @@ class _LoginscreenState extends State<Loginscreen> {
                           fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(
+                              color: AppColor.textfieldbordercolor,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(
+                              color: AppColor.textfieldbordercolor,
+                            ),
                           ),
                           label: Text(
                             "Email",
@@ -115,11 +116,15 @@ class _LoginscreenState extends State<Loginscreen> {
                           fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(
+                              color: AppColor.textfieldbordercolor,
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(
+                              color: AppColor.textfieldbordercolor,
+                            ),
                           ),
                           label: Text(
                             "Password",
@@ -149,9 +154,7 @@ class _LoginscreenState extends State<Loginscreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      SizedBox(height: 20),
                       Row(
                         children: [
                           Text(
@@ -163,19 +166,18 @@ class _LoginscreenState extends State<Loginscreen> {
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10),
                           Text(
                             "Login",
                             style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 14,
-                                color: Colors.blue,
-                                fontWeight: FontWeight.w600),
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),

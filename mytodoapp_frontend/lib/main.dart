@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/addtask.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/edittask.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,8 +33,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Addtask(),
+      home: EditTask(),
     );
   }
-  
 }
