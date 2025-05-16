@@ -10,9 +10,9 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   @override
-    TextEditingController namecontroller = TextEditingController();
-    TextEditingController emailcontroller = TextEditingController();
-    TextEditingController passwordcontroller = TextEditingController();
+  TextEditingController namecontroller = TextEditingController();
+  TextEditingController emailcontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     double screenwidth = MediaQuery.of(context).size.width;
@@ -54,132 +54,109 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         fillColor: Colors.white,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white
-                          )
-
+                          borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white
-                          )
-
+                          borderSide: BorderSide(color: Colors.white),
                         ),
-                        label: Text("Name",style: TextStyle(
-                          color: AppColor.fontcolor,
-                          fontFamily: 'Poppins',
-                        ),),
+                        label: Text(
+                          "Name",
+                          style: TextStyle(
+                            color: AppColor.fontcolor,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                       ),
                     ),
-                     SizedBox(
-                      height: 15,
-
-                    ),
-                     TextField(
+                    SizedBox(height: 15),
+                    TextField(
                       controller: emailcontroller,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white
-                          )
-
+                          borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white
-                          )
-
+                          borderSide: BorderSide(color: Colors.white),
                         ),
-                        label: Text("Email",style: TextStyle(
-                          color: AppColor.fontcolor,
-                          fontFamily: 'Poppins',
-                        ),),
+                        label: Text(
+                          "Email",
+                          style: TextStyle(
+                            color: AppColor.fontcolor,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(
-                      height: 15,
-
-                    ),
-                     TextField(
+                    SizedBox(height: 15),
+                    TextField(
                       controller: passwordcontroller,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white
-                          )
-
+                          borderSide: BorderSide(color: Colors.white),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Colors.white
-                          )
-
+                          borderSide: BorderSide(color: Colors.white),
                         ),
-                        label: Text("Password",style: TextStyle(
-                          color: AppColor.fontcolor,
-                          fontFamily: 'Poppins',
-                        ),),
+                        label: Text(
+                          "Password",
+                          style: TextStyle(
+                            color: AppColor.fontcolor,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                       ),
                     ),
-                      SizedBox(
-                      height: 25,
-
-                    ),
+                    SizedBox(height: 25),
                     Container(
                       width: screenwidth,
                       height: 55,
                       decoration: BoxDecoration(
                         color: AppColor.accentColor,
-                        borderRadius: BorderRadius.circular(20)
-
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Center(
-                        child: Text('Sign Up',style: TextStyle(
-                          fontFamily: "Poppons",
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-
-
-
-                        ),),
+                        child: Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontFamily: "Poppons",
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
                     Row(
                       children: [
                         Text(
-                        "Already have an account??",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w300,
-
+                          "Already have an account??",
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                       Text(
-                        "Sign up",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w600
+                        SizedBox(width: 10),
+                        Text(
+                          "Sign up",
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      ] 
+                      ],
                     ),
-
                   ],
                 ),
               ),

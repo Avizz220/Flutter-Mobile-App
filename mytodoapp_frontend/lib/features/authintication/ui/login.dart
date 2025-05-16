@@ -14,11 +14,14 @@ class _LoginscreenState extends State<Loginscreen> {
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
 
+  @override
   Widget build(BuildContext context) {
     double screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: AppColor.loginanimationcolour,
+      resizeToAvoidBottomInset: true, // ✅ Added to fix keyboard overlap
       body: SafeArea(
+         
         child: Container(
           child: Column(
             children: [
@@ -79,6 +82,9 @@ class _LoginscreenState extends State<Loginscreen> {
                           ),
                         ],
                       ),
+                      SizedBox(
+                        height: 15,
+                      ),
                       TextField(
                         controller: emailcontroller,
                         decoration: InputDecoration(
@@ -86,11 +92,11 @@ class _LoginscreenState extends State<Loginscreen> {
                           fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color:AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color:AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
                           ),
                           label: Text(
                             "Email",
@@ -108,12 +114,12 @@ class _LoginscreenState extends State<Loginscreen> {
                           filled: true,
                           fillColor: Colors.white,
                           enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color:AppColor.textfieldbordercolor),
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color:AppColor.textfieldbordercolor),
+                            borderSide: BorderSide(color: AppColor.textfieldbordercolor),
                           ),
                           label: Text(
                             "Password",
@@ -126,54 +132,50 @@ class _LoginscreenState extends State<Loginscreen> {
                       ),
                       SizedBox(height: 15),
                       Container(
-                      width: screenwidth,
-                      height: 55,
-                      decoration: BoxDecoration(
-                        color: AppColor.accentColor,
-                        borderRadius: BorderRadius.circular(20)
-
-                      ),
-                      child: Center(
-                        child: Text('Login',style: TextStyle(
-                          fontFamily: "Poppins",
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-
-
-
-                        ),),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                     Row(
-                      children: [
-                        Text(
-                        "Don;t have an account??",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w300,
-
+                        width: screenwidth,
+                        height: 55,
+                        decoration: BoxDecoration(
+                          color: AppColor.accentColor,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontFamily: "Poppins",
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ),
                       SizedBox(
-                        width: 10,
+                        height: 20,
                       ),
-                       Text(
-                        "Login",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w600
-                        ),
-                      ),
-                      ] 
-                    )
-
+                      Row(
+                        children: [
+                          Text(
+                            "Don;t have an account??",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            "Login",
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),
