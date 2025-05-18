@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mytodoapp_frontend/contants/colors.dart';
+import 'package:mytodoapp_frontend/widgets/custom_button.dart';
+import 'package:mytodoapp_frontend/widgets/custom_textfield.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -9,16 +11,17 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  @override
   TextEditingController namecontroller = TextEditingController();
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     double screenwidth = MediaQuery.of(context).size.width;
-    double screenheight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true, // ✅ Important for handling keyboard
       body: SafeArea(
         child: Column(
           children: [
@@ -26,8 +29,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Expanded(
               flex: 1,
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 width: screenwidth,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                 decoration: BoxDecoration(
                   color: AppColor.signupcolor,
                   borderRadius: BorderRadius.only(
@@ -35,129 +38,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     topRight: Radius.circular(30),
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 35,
-                        color: AppColor.fontcolor,
-                      ),
-                    ),
-                    SizedBox(height: 25),
-                    TextField(
-                      controller: namecontroller,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        label: Text(
-                          "Name",
-                          style: TextStyle(
-                            color: AppColor.fontcolor,
-                            fontFamily: 'Poppins',
-                          ),
+                child: SingleChildScrollView( // ✅ Only added this to allow scroll
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 35,
+                          color: AppColor.fontcolor,
                         ),
                       ),
-                    ),
-                    SizedBox(height: 15),
-                    TextField(
-                      controller: emailcontroller,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        label: Text(
-                          "Email",
-                          style: TextStyle(
-                            color: AppColor.fontcolor,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
+                      SizedBox(height: 25),
+                      CustomTextField(
+                        controller: namecontroller,
+                        labeltext: "Name",
+                        bordercolor: Colors.white,
                       ),
-                    ),
-                    SizedBox(height: 15),
-                    TextField(
-                      controller: passwordcontroller,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: Colors.white),
-                        ),
-                        label: Text(
-                          "Password",
-                          style: TextStyle(
-                            color: AppColor.fontcolor,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
+                      SizedBox(height: 15),
+                      CustomTextField(
+                        controller: emailcontroller,
+                        labeltext: "Email",
+                        bordercolor: Colors.white,
                       ),
-                    ),
-                    SizedBox(height: 25),
-                    Container(
-                      width: screenwidth,
-                      height: 55,
-                      decoration: BoxDecoration(
-                        color: AppColor.accentColor,
-                        borderRadius: BorderRadius.circular(20),
+                      SizedBox(height: 15),
+                      CustomTextField(
+                        controller: passwordcontroller,
+                        labeltext: "Password",
+                        bordercolor: Colors.white,
                       ),
-                      child: Center(
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                            fontFamily: "Poppons",
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
+                      SizedBox(height: 25),
+                      CustomeButton(btnwidth: screenwidth, btntext: "Sign Up"),
+                      SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account??",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                            ),
                           ),
-                        ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Sign up",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "Already have an account??",
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Sign up",
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 14,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
