@@ -10,12 +10,11 @@ class EditTask extends StatefulWidget {
 
 class _EditTaskState extends State<EditTask> {
   TextEditingController titlecontroller = TextEditingController();
-  TextEditingController descriptioncontroller =
-      TextEditingController();
-  
+  TextEditingController descriptioncontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-     double screenwidth = MediaQuery.of(context).size.width;
+    double screenwidth = MediaQuery.of(context).size.width;
     double screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColor.accentColor,
@@ -154,7 +153,6 @@ class _EditTaskState extends State<EditTask> {
           ],
         ),
       ),
-
     );
   }
 }
