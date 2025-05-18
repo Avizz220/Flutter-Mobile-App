@@ -18,7 +18,7 @@ class Viewtask extends StatelessWidget {
             AppColor
                 .accentColor, //We can also give the background colour for this
         title: Text(
-          "Edit Task",
+          "View Task",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
@@ -72,7 +72,7 @@ class Viewtask extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
                 fontFamily: "Poppins",
-                color: AppColor.accentColor,
+                color: AppColor.fontcolor,
               ),
             ),
 
@@ -91,7 +91,7 @@ class Viewtask extends StatelessWidget {
               "Routine exercise every morning with sports, either running, or swimming, or jogging, or badminton, futsal, or similar sports. Work out to form a better body and live a healthier life. hopefully all this can be achieved.",
               style: TextStyle(
                 fontWeight: FontWeight.w400,
-                fontSize: 16,
+                fontSize: 14,
                 fontFamily: "Poppins",
                 color: AppColor.fontcolor,
               ),
