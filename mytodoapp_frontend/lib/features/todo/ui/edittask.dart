@@ -132,9 +132,7 @@ class _EditTaskState extends State<EditTask> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 40,
-            ),
+            SizedBox(height: 40),
             Container(
               width: screenwidth,
               height: 55,
