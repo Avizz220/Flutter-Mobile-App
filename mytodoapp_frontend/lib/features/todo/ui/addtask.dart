@@ -132,6 +132,9 @@ class _MyWidgetState extends State<Addtask> {
                 ),
               ),
             ),
+            SizedBox(
+              height:40,
+            ),
             Container(
               width: screenwidth,
               height: 55,
