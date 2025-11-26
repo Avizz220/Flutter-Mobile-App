@@ -135,17 +135,17 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         ),
                         SizedBox(height: 20),
                         CustomeTodoCard(
-                          cardtitle: "Workout",
+                          cardtitle: "Workout 01",
                           btnvisible: false,
                           isTaskCompleted: false,
                         ),
                         CustomeTodoCard(
-                          cardtitle: "Workout",
+                          cardtitle: "Workout 02",
                           btnvisible: false,
-                          isTaskCompleted: false,
+                          isTaskCompleted: true,
                         ),
                         CustomeTodoCard(
-                          cardtitle: "Workout",
+                          cardtitle: "Workout 03",
                           btnvisible: false,
                           isTaskCompleted: false,
                         ),
