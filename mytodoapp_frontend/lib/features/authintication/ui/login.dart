@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mytodoapp_frontend/contants/colors.dart';
+import 'package:mytodoapp_frontend/features/authintication/ui/signup.dart';
 import 'package:mytodoapp_frontend/widgets/custom_button.dart';
 import 'package:mytodoapp_frontend/widgets/custom_textfield.dart';
 
@@ -113,7 +114,7 @@ class _LoginscreenState extends State<Loginscreen> {
                               Row(
                                 children: [
                                   Text(
-                                    "Don;t have an account??",
+                                    "Don't have an account??",
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 14,
@@ -122,13 +123,17 @@ class _LoginscreenState extends State<Loginscreen> {
                                     ),
                                   ),
                                   SizedBox(width: 10),
-                                  Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 14,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w600,
+                                  GestureDetector(
+                                    onTap: () => {Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUpScreen()))
+                                    },
+                                    child: Text(
+                                      "Sign up",
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ],

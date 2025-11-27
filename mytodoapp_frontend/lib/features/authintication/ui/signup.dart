@@ -85,7 +85,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           SizedBox(width: 10),
                           Text(
-                            "Sign up",
+                            "Login",
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 14,
