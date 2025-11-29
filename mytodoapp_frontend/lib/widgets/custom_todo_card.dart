@@ -3,9 +3,21 @@ import 'package:mytodoapp_frontend/contants/colors.dart';
 
 class CustomeTodoCard extends StatefulWidget {
   final String cardtitle;
-  final bool btnvisible; //Boolean value
+  final bool btnvisible;
   final bool isTaskCompleted;
-  const CustomeTodoCard({super.key, required this.cardtitle, required this.btnvisible, required this.isTaskCompleted});
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onToggleComplete;
+
+  const CustomeTodoCard({
+    super.key,
+    required this.cardtitle,
+    required this.btnvisible,
+    required this.isTaskCompleted,
+    this.onEdit,
+    this.onDelete,
+    this.onToggleComplete,
+  });
 
   @override
   State<CustomeTodoCard> createState() => _CustomeTodoCardState();
@@ -25,30 +37,52 @@ class _CustomeTodoCardState extends State<CustomeTodoCard> {
       ),
       child: Row(
         children: [
-          Radio(value:widget.isTaskCompleted?1: 0, groupValue: (), onChanged: (value) {}),
-          Text(
-            widget.cardtitle,
-            style: TextStyle(
-              fontFamily: "poppins",
-              color:widget.isTaskCompleted?AppColor.fontcolor: AppColor.accentColor,//If the task is completed according to that app color is shown
-              fontWeight: FontWeight.w500,
-              fontSize: 15,
+          Checkbox(
+            value: widget.isTaskCompleted,
+            onChanged: (value) {
+              if (widget.onToggleComplete != null) {
+                widget.onToggleComplete!();
+              }
+            },
+            activeColor: AppColor.accentColor,
+          ),
+          Expanded(
+            child: Text(
+              widget.cardtitle,
+              style: TextStyle(
+                fontFamily: "poppins",
+                color:
+                    widget.isTaskCompleted
+                        ? AppColor.fontcolor
+                        : AppColor.accentColor,
+                fontWeight: FontWeight.w500,
+                fontSize: 15,
+                decoration:
+                    widget.isTaskCompleted
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Spacer(),
           widget.isTaskCompleted
-              ? SizedBox(width: 10)//We use this to if btnvisble is true these icons should be visible other wise they are not visible
-              //It is passed from the database and checked if it is true or not
-             : Column(
+              ? SizedBox(width: 10)
+              : Column(
                 children: [
                   Spacer(),
-                  Icon(Icons.edit),
+                  GestureDetector(
+                    onTap: widget.onEdit,
+                    child: Icon(Icons.edit),
+                  ),
                   SizedBox(height: 5),
-                  Icon(Icons.delete, color: Colors.red),
+                  GestureDetector(
+                    onTap: widget.onDelete,
+                    child: Icon(Icons.delete, color: Colors.red),
+                  ),
                   Spacer(),
                 ],
-              )
-              
+              ),
         ],
       ),
     );
