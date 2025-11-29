@@ -91,13 +91,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CalendarEventsScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => CalendarEventsScreen(),
+                  ),
                 );
               },
-              child: Icon(
-                Icons.calendar_today,
-                size: 24,
-              ),
+              child: Icon(Icons.calendar_today, size: 24),
             ),
             SizedBox(width: 20),
             GestureDetector(
@@ -389,19 +388,24 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                       btnvisible: false,
                                       isTaskCompleted: todo.isCompleted,
                                       onCardTap: () async {
-                                        final event = await eventServices.getEventByTaskId(todo.todoID);
+                                        final event = await eventServices
+                                            .getEventByTaskId(todo.todoID);
                                         if (event != null) {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) => EventDetailScreen(
-                                                event: event,
-                                                todo: todo,
-                                              ),
+                                              builder:
+                                                  (context) =>
+                                                      EventDetailScreen(
+                                                        event: event,
+                                                        todo: todo,
+                                                      ),
                                             ),
                                           );
                                         } else {
-                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
                                             SnackBar(
                                               content: Text(
                                                 'This task is not added to calendar yet',

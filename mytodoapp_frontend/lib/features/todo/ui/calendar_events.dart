@@ -45,9 +45,8 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
             onPressed: () async {
               await showDialog(
                 context: context,
-                builder: (context) => AddEventDialog(
-                  selectedDate: _selectedDay,
-                ),
+                builder:
+                    (context) => AddEventDialog(selectedDate: _selectedDay),
               );
               setState(() {});
             },
@@ -72,13 +71,12 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                   _selectedDay = selectedDay;
                   _focusedDay = focusedDay;
                 });
-                
+
                 // Show add event dialog when clicking on a date
                 await showDialog(
                   context: context,
-                  builder: (context) => AddEventDialog(
-                    selectedDate: selectedDay,
-                  ),
+                  builder:
+                      (context) => AddEventDialog(selectedDate: selectedDay),
                 );
                 setState(() {});
               },
@@ -103,9 +101,7 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                   color: Colors.black,
                   fontFamily: 'Poppins',
                 ),
-                defaultTextStyle: TextStyle(
-                  fontFamily: 'Poppins',
-                ),
+                defaultTextStyle: TextStyle(fontFamily: 'Poppins'),
                 outsideTextStyle: TextStyle(
                   color: Colors.grey.shade400,
                   fontFamily: 'Poppins',
@@ -120,7 +116,10 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                   fontSize: 16,
                 ),
                 leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
-                rightChevronIcon: Icon(Icons.chevron_right, color: Colors.black),
+                rightChevronIcon: Icon(
+                  Icons.chevron_right,
+                  color: Colors.black,
+                ),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekdayStyle: TextStyle(
@@ -170,13 +169,19 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                 }
 
                 final allEvents = snapshot.data!;
-                final todayEvents = allEvents
-                    .where((e) => isSameDay(e.eventDate, _selectedDay))
-                    .toList();
-                final upcomingEvents = allEvents
-                    .where((e) => e.eventDate.isAfter(DateTime.now()) && !isSameDay(e.eventDate, _selectedDay))
-                    .take(4)
-                    .toList();
+                final todayEvents =
+                    allEvents
+                        .where((e) => isSameDay(e.eventDate, _selectedDay))
+                        .toList();
+                final upcomingEvents =
+                    allEvents
+                        .where(
+                          (e) =>
+                              e.eventDate.isAfter(DateTime.now()) &&
+                              !isSameDay(e.eventDate, _selectedDay),
+                        )
+                        .take(4)
+                        .toList();
 
                 return SingleChildScrollView(
                   child: Column(
@@ -233,7 +238,9 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                             padding: EdgeInsets.symmetric(horizontal: 15),
                             itemCount: upcomingEvents.length,
                             itemBuilder: (context, index) {
-                              return _buildUpcomingEventCard(upcomingEvents[index]);
+                              return _buildUpcomingEventCard(
+                                upcomingEvents[index],
+                              );
                             },
                           ),
                         ),

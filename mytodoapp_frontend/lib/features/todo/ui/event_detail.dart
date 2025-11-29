@@ -8,11 +8,7 @@ class EventDetailScreen extends StatelessWidget {
   final EventModel event;
   final TodoModel? todo;
 
-  const EventDetailScreen({
-    super.key,
-    required this.event,
-    this.todo,
-  });
+  const EventDetailScreen({super.key, required this.event, this.todo});
 
   Color _getCategoryColor(String color) {
     switch (color.toLowerCase()) {
@@ -136,7 +132,11 @@ class EventDetailScreen extends StatelessWidget {
                           SizedBox(height: 15),
                           Row(
                             children: [
-                              Icon(Icons.location_on, size: 18, color: Colors.grey),
+                              Icon(
+                                Icons.location_on,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
                               SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -153,7 +153,11 @@ class EventDetailScreen extends StatelessWidget {
                           SizedBox(height: 10),
                           Row(
                             children: [
-                              Icon(Icons.access_time, size: 18, color: Colors.grey),
+                              Icon(
+                                Icons.access_time,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
                               SizedBox(width: 8),
                               Text(
                                 '${event.startTime} - ${event.endTime}',
@@ -168,10 +172,16 @@ class EventDetailScreen extends StatelessWidget {
                           SizedBox(height: 10),
                           Row(
                             children: [
-                              Icon(Icons.calendar_today, size: 18, color: Colors.grey),
+                              Icon(
+                                Icons.calendar_today,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
                               SizedBox(width: 8),
                               Text(
-                                DateFormat('EEEE, MMMM d, yyyy').format(event.eventDate),
+                                DateFormat(
+                                  'EEEE, MMMM d, yyyy',
+                                ).format(event.eventDate),
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 13,
@@ -259,16 +269,24 @@ class EventDetailScreen extends StatelessWidget {
                     Row(
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: todo!.isCompleted ? Colors.green : Colors.orange,
+                            color:
+                                todo!.isCompleted
+                                    ? Colors.green
+                                    : Colors.orange,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                todo!.isCompleted ? Icons.check_circle : Icons.pending,
+                                todo!.isCompleted
+                                    ? Icons.check_circle
+                                    : Icons.pending,
                                 size: 16,
                                 color: Colors.white,
                               ),
@@ -286,7 +304,11 @@ class EventDetailScreen extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 10),
-                        Icon(Icons.calendar_month, size: 16, color: Colors.grey),
+                        Icon(
+                          Icons.calendar_month,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
                         SizedBox(width: 5),
                         Text(
                           'Created: ${DateFormat('MMM d, yyyy').format(todo!.createdAt)}',

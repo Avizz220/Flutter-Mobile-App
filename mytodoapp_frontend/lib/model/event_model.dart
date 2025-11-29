@@ -45,7 +45,9 @@ class EventModel {
       taskID: json['taskID'] ?? '',
       title: json['title'] ?? '',
       location: json['location'] ?? '',
-      eventDate: DateTime.parse(json['eventDate'] ?? DateTime.now().toIso8601String()),
+      eventDate: DateTime.parse(
+        json['eventDate'] ?? DateTime.now().toIso8601String(),
+      ),
       startTime: json['startTime'] ?? '',
       endTime: json['endTime'] ?? '',
       category: json['category'] ?? '',

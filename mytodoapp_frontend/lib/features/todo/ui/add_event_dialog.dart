@@ -10,11 +10,7 @@ class AddEventDialog extends StatefulWidget {
   final TodoModel? todo;
   final DateTime selectedDate;
 
-  const AddEventDialog({
-    super.key,
-    this.todo,
-    required this.selectedDate,
-  });
+  const AddEventDialog({super.key, this.todo, required this.selectedDate});
 
   @override
   State<AddEventDialog> createState() => _AddEventDialogState();
@@ -25,7 +21,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
   final TextEditingController startTimeController = TextEditingController();
   final TextEditingController endTimeController = TextEditingController();
   final EventServices eventServices = EventServices();
-  
+
   String selectedCategory = 'Booking';
   String selectedColor = 'blue';
   DateTime selectedDate = DateTime.now();
@@ -51,7 +47,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isStartTime) {
@@ -72,7 +68,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
-    
+
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
@@ -83,9 +79,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         padding: EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -165,14 +159,15 @@ class _AddEventDialogState extends State<AddEventDialog> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_today, size: 20, color: AppColor.accentColor),
+                      Icon(
+                        Icons.calendar_today,
+                        size: 20,
+                        color: AppColor.accentColor,
+                      ),
                       SizedBox(width: 10),
                       Text(
                         DateFormat('EEEE, MMMM d, yyyy').format(selectedDate),
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
                       ),
                     ],
                   ),
@@ -198,13 +193,18 @@ class _AddEventDialogState extends State<AddEventDialog> {
                   hintStyle: TextStyle(fontFamily: 'Poppins', fontSize: 14),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: AppColor.textfieldbordercolor),
+                    borderSide: BorderSide(
+                      color: AppColor.textfieldbordercolor,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: AppColor.accentColor),
                   ),
-                  prefixIcon: Icon(Icons.location_on, color: AppColor.accentColor),
+                  prefixIcon: Icon(
+                    Icons.location_on,
+                    color: AppColor.accentColor,
+                  ),
                 ),
               ),
               SizedBox(height: 15),
@@ -227,17 +227,28 @@ class _AddEventDialogState extends State<AddEventDialog> {
                         GestureDetector(
                           onTap: () => _selectTime(context, true),
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: AppColor.textfieldbordercolor),
+                              border: Border.all(
+                                color: AppColor.textfieldbordercolor,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.access_time, size: 20, color: AppColor.accentColor),
+                                Icon(
+                                  Icons.access_time,
+                                  size: 20,
+                                  color: AppColor.accentColor,
+                                ),
                                 SizedBox(width: 10),
                                 Text(
-                                  startTime != null ? startTime!.format(context) : 'Select',
+                                  startTime != null
+                                      ? startTime!.format(context)
+                                      : 'Select',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 14,
@@ -268,17 +279,28 @@ class _AddEventDialogState extends State<AddEventDialog> {
                         GestureDetector(
                           onTap: () => _selectTime(context, false),
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 12,
+                            ),
                             decoration: BoxDecoration(
-                              border: Border.all(color: AppColor.textfieldbordercolor),
+                              border: Border.all(
+                                color: AppColor.textfieldbordercolor,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.access_time, size: 20, color: AppColor.accentColor),
+                                Icon(
+                                  Icons.access_time,
+                                  size: 20,
+                                  color: AppColor.accentColor,
+                                ),
                                 SizedBox(width: 10),
                                 Text(
-                                  endTime != null ? endTime!.format(context) : 'Select',
+                                  endTime != null
+                                      ? endTime!.format(context)
+                                      : 'Select',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 14,
@@ -307,35 +329,43 @@ class _AddEventDialogState extends State<AddEventDialog> {
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: categories.map((category) {
-                  final isSelected = selectedCategory == category['name'];
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCategory = category['name']!;
-                        selectedColor = category['color']!;
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSelected 
-                            ? AppColor.accentColor 
-                            : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        category['name']!,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          color: isSelected ? Colors.white : Colors.black87,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                children:
+                    categories.map((category) {
+                      final isSelected = selectedCategory == category['name'];
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCategory = category['name']!;
+                            selectedColor = category['color']!;
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                isSelected
+                                    ? AppColor.accentColor
+                                    : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            category['name']!,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight:
+                                  isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
               ),
               SizedBox(height: 25),
               Row(
@@ -365,20 +395,26 @@ class _AddEventDialogState extends State<AddEventDialog> {
                             SnackBar(
                               content: Text(
                                 'Please enter a location',
-                                style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                               backgroundColor: Colors.red,
                             ),
                           );
                           return;
                         }
-                        
+
                         if (startTime == null || endTime == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
                                 'Please select start and end time',
-                                style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                               backgroundColor: Colors.red,
                             ),
@@ -390,7 +426,8 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           final user = FirebaseAuth.instance.currentUser;
                           if (user == null) return;
 
-                          final eventID = DateTime.now().millisecondsSinceEpoch.toString();
+                          final eventID =
+                              DateTime.now().millisecondsSinceEpoch.toString();
                           final event = EventModel(
                             eventID: eventID,
                             userID: user.uid,
@@ -405,14 +442,17 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           );
 
                           await eventServices.addEvent(event);
-                          
+
                           Navigator.pop(context, true);
-                          
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
                                 'Event added to calendar!',
-                                style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                               backgroundColor: Colors.green,
                             ),
@@ -422,7 +462,10 @@ class _AddEventDialogState extends State<AddEventDialog> {
                             SnackBar(
                               content: Text(
                                 'Failed to add event: ${e.toString()}',
-                                style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                               backgroundColor: Colors.red,
                             ),

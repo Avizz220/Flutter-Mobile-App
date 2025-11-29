@@ -8,7 +8,10 @@ class EventServices {
 
   Future<void> addEvent(EventModel event) async {
     try {
-      await firestore.collection('Events').doc(event.eventID).set(event.toJson());
+      await firestore
+          .collection('Events')
+          .doc(event.eventID)
+          .set(event.toJson());
     } catch (e) {
       rethrow;
     }
@@ -26,14 +29,15 @@ class EventServices {
           .where('userID', isEqualTo: user.uid)
           .snapshots()
           .map((snapshot) {
-        final events = snapshot.docs.map((doc) {
-          final data = doc.data();
-          return EventModel.fromJson(data);
-        }).toList();
+            final events =
+                snapshot.docs.map((doc) {
+                  final data = doc.data();
+                  return EventModel.fromJson(data);
+                }).toList();
 
-        events.sort((a, b) => a.eventDate.compareTo(b.eventDate));
-        return events;
-      });
+            events.sort((a, b) => a.eventDate.compareTo(b.eventDate));
+            return events;
+          });
     } catch (e) {
       return Stream.value([]);
     }
@@ -47,14 +51,23 @@ class EventServices {
       final startOfDay = DateTime(date.year, date.month, date.day);
       final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-      final snapshot = await firestore
-          .collection('Events')
-          .where('userID', isEqualTo: user.uid)
-          .where('eventDate', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
-          .where('eventDate', isLessThanOrEqualTo: endOfDay.toIso8601String())
-          .get();
+      final snapshot =
+          await firestore
+              .collection('Events')
+              .where('userID', isEqualTo: user.uid)
+              .where(
+                'eventDate',
+                isGreaterThanOrEqualTo: startOfDay.toIso8601String(),
+              )
+              .where(
+                'eventDate',
+                isLessThanOrEqualTo: endOfDay.toIso8601String(),
+              )
+              .get();
 
-      return snapshot.docs.map((doc) => EventModel.fromJson(doc.data())).toList();
+      return snapshot.docs
+          .map((doc) => EventModel.fromJson(doc.data()))
+          .toList();
     } catch (e) {
       return [];
     }
@@ -70,7 +83,10 @@ class EventServices {
 
   Future<void> updateEvent(EventModel event) async {
     try {
-      await firestore.collection('Events').doc(event.eventID).update(event.toJson());
+      await firestore
+          .collection('Events')
+          .doc(event.eventID)
+          .update(event.toJson());
     } catch (e) {
       rethrow;
     }
@@ -81,12 +97,13 @@ class EventServices {
       final user = auth.currentUser;
       if (user == null) return null;
 
-      final snapshot = await firestore
-          .collection('Events')
-          .where('userID', isEqualTo: user.uid)
-          .where('taskID', isEqualTo: taskID)
-          .limit(1)
-          .get();
+      final snapshot =
+          await firestore
+              .collection('Events')
+              .where('userID', isEqualTo: user.uid)
+              .where('taskID', isEqualTo: taskID)
+              .limit(1)
+              .get();
 
       if (snapshot.docs.isEmpty) return null;
 
