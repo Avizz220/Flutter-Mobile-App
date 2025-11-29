@@ -11,6 +11,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Authservices authservices = Authservices();
   AuthBloc() : super(AuthInitial()) {
     on<SignUpEvent>(signupEvent);
+    on<SignInEvent>(signInEvent);
   }
 
   Future<void> signupEvent(SignUpEvent event, Emitter<AuthState> emit) async {
@@ -32,6 +33,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       emit(SignupErrorState(error: 'An unexpected error occurred'));
+    }
+  }
+
+  Future<void> signInEvent(SignInEvent event, Emitter<AuthState> emit) async {
+    try {
+      emit(SignInProgressState());
+      await authservices.signInUser(event.email, event.password);
+      emit(SignInSuccessState());
+    } on FirebaseException catch (e) {
+      if (e.code == 'user-not-found') {
+        emit(SignInErrorState(error: 'User not found'));
+      } else if (e.code == 'wrong-password') {
+        emit(SignInErrorState(error: 'Wrong password'));
+      } else if (e.code == 'invalid-email') {
+        emit(SignInErrorState(error: 'Invalid email format'));
+      } else {
+        emit(SignInErrorState(error: e.message ?? 'An error occurred'));
+      }
+    } catch (e) {
+      emit(SignInErrorState(error: 'An unexpected error occurred'));
     }
   }
 }

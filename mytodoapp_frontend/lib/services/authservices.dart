@@ -32,4 +32,15 @@ class Authservices {
       rethrow;
     }
   }
+
+  Future<void> signInUser(String email, String password) async {
+    try {
+      await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
