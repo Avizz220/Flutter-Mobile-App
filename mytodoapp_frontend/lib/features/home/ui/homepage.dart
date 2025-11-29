@@ -4,9 +4,9 @@ import 'package:mytodoapp_frontend/features/todo/ui/addtask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/edittask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/notifications.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/calendar_events.dart';
-import 'package:mytodoapp_frontend/features/todo/ui/add_event_dialog.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/event_detail.dart';
 import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
+import 'package:mytodoapp_frontend/features/settings/ui/settings.dart';
 import 'package:mytodoapp_frontend/model/todo_model.dart';
 import 'package:mytodoapp_frontend/services/todo_services.dart';
 import 'package:mytodoapp_frontend/services/notification_services_db.dart';
@@ -70,9 +70,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenheight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
-    double appbarHeight = AppBar().preferredSize.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -97,6 +96,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 );
               },
               child: Icon(Icons.calendar_today, size: 24),
+            ),
+            SizedBox(width: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                );
+              },
+              child: Icon(Icons.settings_outlined, size: 24),
             ),
             SizedBox(width: 20),
             GestureDetector(
@@ -229,6 +238,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             fontWeight: FontWeight.w700,
                             fontFamily: "Poppins",
                             fontSize: 24,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                         Text(
@@ -332,6 +342,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             fontFamily: "Poppins",
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(height: 20),

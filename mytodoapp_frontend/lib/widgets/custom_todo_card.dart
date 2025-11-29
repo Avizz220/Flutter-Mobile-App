@@ -28,6 +28,7 @@ class CustomeTodoCard extends StatefulWidget {
 class _CustomeTodoCardState extends State<CustomeTodoCard> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: widget.onCardTap,
@@ -57,14 +58,15 @@ class _CustomeTodoCardState extends State<CustomeTodoCard> {
                   fontFamily: "poppins",
                   color:
                       widget.isTaskCompleted
-                          ? AppColor.fontcolor
-                          : AppColor.accentColor,
+                          ? (isDark ? Colors.white70 : AppColor.fontcolor)
+                          : (isDark ? Colors.white : AppColor.accentColor),
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
                   decoration:
                       widget.isTaskCompleted
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
+                  decorationColor: isDark ? Colors.white70 : AppColor.fontcolor,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -77,7 +79,10 @@ class _CustomeTodoCardState extends State<CustomeTodoCard> {
                     Spacer(),
                     GestureDetector(
                       onTap: widget.onEdit,
-                      child: Icon(Icons.edit),
+                      child: Icon(
+                        Icons.edit,
+                        color: isDark ? Colors.white70 : Colors.black,
+                      ),
                     ),
                     SizedBox(height: 5),
                     GestureDetector(

@@ -24,10 +24,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Color(0xFF121212) : Colors.white,
       resizeToAvoidBottomInset: true, // ✅ Important for handling keyboard
       body: BlocConsumer<AuthBloc, AuthState>(
         bloc: authBloc,
@@ -82,7 +83,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     width: screenwidth,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     decoration: BoxDecoration(
-                      color: AppColor.signupcolor,
+                      color: isDark ? Color(0xFF1E1E1E) : AppColor.signupcolor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30),
@@ -98,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 35,
-                              color: AppColor.fontcolor,
+                              color: isDark ? Colors.white : AppColor.fontcolor,
                             ),
                           ),
                           SizedBox(height: 25),
@@ -147,7 +148,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontSize: 14,
-                                  color: Colors.black,
+                                  color: isDark ? Colors.white70 : Colors.black,
                                   fontWeight: FontWeight.w300,
                                 ),
                               ),

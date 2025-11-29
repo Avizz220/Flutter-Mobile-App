@@ -4,8 +4,7 @@ part of 'todo_bloc.dart';
 sealed class TodoEvent {}
 
 class TodoAddedEvent extends TodoEvent {
-  final TodoModel  todoModel;;
-  
+  final TodoModel todoModel;
 
-  TodoAddedEvent({required this.totoModel});
+  TodoAddedEvent({required this.todoModel});
 }

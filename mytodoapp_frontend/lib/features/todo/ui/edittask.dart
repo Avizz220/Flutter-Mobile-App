@@ -27,6 +27,7 @@ class _EditTaskState extends State<EditTask> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
     double screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -50,18 +51,27 @@ class _EditTaskState extends State<EditTask> {
         leading: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                height: 45,
-                width: 45,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+            Padding(
+              padding: EdgeInsets.only(left: 15),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  height: 45,
+                  width: 45,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 16,
+                      color: AppColor.accentColor,
+                    ),
+                  ),
                 ),
-                child: Center(child: Icon(Icons.arrow_back, size: 16)),
               ),
             ),
           ],
@@ -77,7 +87,7 @@ class _EditTaskState extends State<EditTask> {
             topLeft: Radius.circular(50),
             topRight: Radius.circular(50),
           ),
-          color: Colors.white,
+          color: isDark ? Color(0xFF121212) : Colors.white,
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -90,31 +100,41 @@ class _EditTaskState extends State<EditTask> {
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
                   fontFamily: "Poppins",
-                  color: AppColor.accentColor,
+                  color: isDark ? Colors.white : AppColor.accentColor,
                 ),
               ),
               SizedBox(height: 15),
               TextField(
                 controller: titlecontroller,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontFamily: 'Poppins',
+                ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: isDark ? Color(0xFF1E1E1E) : Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: AppColor.textfieldbordercolor,
+                      color:
+                          isDark
+                              ? Colors.white24
+                              : AppColor.textfieldbordercolor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: AppColor.textfieldbordercolor,
+                      color:
+                          isDark
+                              ? AppColor.accentColor
+                              : AppColor.textfieldbordercolor,
                     ),
                   ),
                   label: Text(
                     "Title",
                     style: TextStyle(
-                      color: AppColor.fontcolor,
+                      color: isDark ? Colors.white70 : AppColor.fontcolor,
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -127,7 +147,7 @@ class _EditTaskState extends State<EditTask> {
                   fontWeight: FontWeight.w500,
                   fontSize: 14,
                   fontFamily: "Poppins",
-                  color: AppColor.accentColor,
+                  color: isDark ? Colors.white : AppColor.accentColor,
                 ),
               ),
               SizedBox(height: 15),
@@ -135,25 +155,35 @@ class _EditTaskState extends State<EditTask> {
                 minLines: 5,
                 maxLines: 8,
                 controller: descriptioncontroller,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontFamily: 'Poppins',
+                ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: isDark ? Color(0xFF1E1E1E) : Colors.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: AppColor.textfieldbordercolor,
+                      color:
+                          isDark
+                              ? Colors.white24
+                              : AppColor.textfieldbordercolor,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: AppColor.textfieldbordercolor,
+                      color:
+                          isDark
+                              ? AppColor.accentColor
+                              : AppColor.textfieldbordercolor,
                     ),
                   ),
                   label: Text(
                     "Description",
                     style: TextStyle(
-                      color: AppColor.fontcolor,
+                      color: isDark ? Colors.white70 : AppColor.fontcolor,
                       fontFamily: 'Poppins',
                     ),
                   ),

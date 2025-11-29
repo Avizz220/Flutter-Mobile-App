@@ -24,10 +24,12 @@ class _LoginscreenState extends State<Loginscreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColor.loginanimationcolour,
+      backgroundColor:
+          isDark ? Color(0xFF121212) : AppColor.loginanimationcolour,
       resizeToAvoidBottomInset: true,
       body: BlocConsumer<AuthBloc, AuthState>(
         bloc: authBloc,
@@ -102,7 +104,8 @@ class _LoginscreenState extends State<Loginscreen> {
                                 horizontal: 20,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color:
+                                    isDark ? Color(0xFF1E1E1E) : Colors.white,
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(30),
                                   topRight: Radius.circular(30),
@@ -116,7 +119,10 @@ class _LoginscreenState extends State<Loginscreen> {
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontSize: 35,
-                                      color: AppColor.fontcolor,
+                                      color:
+                                          isDark
+                                              ? Colors.white
+                                              : AppColor.fontcolor,
                                     ),
                                   ),
                                   SizedBox(height: 15),
@@ -127,7 +133,10 @@ class _LoginscreenState extends State<Loginscreen> {
                                         style: TextStyle(
                                           fontFamily: 'Poppins',
                                           fontSize: 13,
-                                          color: AppColor.labletextcolor,
+                                          color:
+                                              isDark
+                                                  ? Colors.white70
+                                                  : AppColor.labletextcolor,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
@@ -186,7 +195,10 @@ class _LoginscreenState extends State<Loginscreen> {
                                         style: TextStyle(
                                           fontFamily: 'Poppins',
                                           fontSize: 14,
-                                          color: Colors.black,
+                                          color:
+                                              isDark
+                                                  ? Colors.white70
+                                                  : Colors.black,
                                           fontWeight: FontWeight.w300,
                                         ),
                                       ),

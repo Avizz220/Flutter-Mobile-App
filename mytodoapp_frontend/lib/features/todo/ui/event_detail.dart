@@ -29,12 +29,13 @@ class EventDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     Color categoryColor = _getCategoryColor(event.color);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
@@ -126,7 +127,7 @@ class EventDetailScreen extends StatelessWidget {
                               fontFamily: 'Poppins',
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                           SizedBox(height: 15),
@@ -206,7 +207,7 @@ class EventDetailScreen extends StatelessWidget {
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: Colors.black87,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
               ),
@@ -239,7 +240,7 @@ class EventDetailScreen extends StatelessWidget {
                               fontFamily: 'Poppins',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black87,
+                              color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                         ),
@@ -261,7 +262,10 @@ class EventDetailScreen extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 14,
-                        color: Colors.black87,
+                        color:
+                            isDark
+                                ? Colors.white.withOpacity(0.9)
+                                : Colors.black87,
                         height: 1.5,
                       ),
                     ),

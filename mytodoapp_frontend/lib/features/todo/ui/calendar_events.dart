@@ -21,14 +21,19 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? Color(0xFF1E1E1E) : Colors.white,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: isDark ? Colors.white : Colors.black,
+            size: 20,
+          ),
         ),
         title: Text(
           'Calendar Events',
@@ -36,7 +41,7 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
             fontFamily: 'Poppins',
             fontWeight: FontWeight.w600,
             fontSize: 18,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
           ),
         ),
         centerTitle: true,
@@ -114,11 +119,15 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
-                leftChevronIcon: Icon(Icons.chevron_left, color: Colors.black),
+                leftChevronIcon: Icon(
+                  Icons.chevron_left,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
                 rightChevronIcon: Icon(
                   Icons.chevron_right,
-                  color: Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
@@ -126,11 +135,13 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
                 weekendStyle: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
             ),
@@ -173,15 +184,15 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                     allEvents
                         .where((e) => isSameDay(e.eventDate, _selectedDay))
                         .toList();
+
+                // Get the 3 nearest upcoming events sorted by date
                 final upcomingEvents =
                     allEvents
-                        .where(
-                          (e) =>
-                              e.eventDate.isAfter(DateTime.now()) &&
-                              !isSameDay(e.eventDate, _selectedDay),
-                        )
-                        .take(4)
-                        .toList();
+                        .where((e) => e.eventDate.isAfter(DateTime.now()))
+                        .toList()
+                      ..sort((a, b) => a.eventDate.compareTo(b.eventDate));
+
+                final nearestThreeEvents = upcomingEvents.take(3).toList();
 
                 return SingleChildScrollView(
                   child: Column(
@@ -204,46 +215,28 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                         ...todayEvents.map((event) => _buildEventCard(event)),
                         SizedBox(height: 20),
                       ],
-                      if (upcomingEvents.isNotEmpty) ...[
+                      if (nearestThreeEvents.isNotEmpty) ...[
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Upcoming',
+                                'Nearest 3 Upcoming Activities',
                                 style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              Text(
-                                'View all',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 12,
-                                  color: Colors.grey,
+                                  color: isDark ? Colors.white : Colors.black87,
                                 ),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(height: 15),
-                        Container(
-                          height: 120,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            padding: EdgeInsets.symmetric(horizontal: 15),
-                            itemCount: upcomingEvents.length,
-                            itemBuilder: (context, index) {
-                              return _buildUpcomingEventCard(
-                                upcomingEvents[index],
-                              );
-                            },
-                          ),
-                        ),
+                        ...nearestThreeEvents.map((event) {
+                          return _buildUpcomingReminderCard(event);
+                        }),
                       ],
                     ],
                   ),
@@ -257,13 +250,14 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
   }
 
   Widget _buildEventCard(EventModel event) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     Color categoryColor = _getCategoryColor(event.color);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
       padding: EdgeInsets.all(0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -330,7 +324,7 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                       fontFamily: 'Poppins',
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: isDark ? Colors.white : Colors.black87,
                     ),
                   ),
                   SizedBox(height: 5),
@@ -379,63 +373,6 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
     );
   }
 
-  Widget _buildUpcomingEventCard(EventModel event) {
-    Color categoryColor = _getCategoryColor(event.color);
-
-    return Container(
-      width: 100,
-      margin: EdgeInsets.only(right: 15),
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: categoryColor,
-              shape: BoxShape.circle,
-            ),
-          ),
-          SizedBox(height: 10),
-          Text(
-            event.category,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 5),
-          Text(
-            DateFormat('dd').format(event.eventDate),
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          Text(
-            DateFormat('EEE').format(event.eventDate),
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Color _getCategoryColor(String color) {
     switch (color.toLowerCase()) {
       case 'blue':
@@ -451,5 +388,134 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
       default:
         return AppColor.accentColor;
     }
+  }
+
+  Widget _buildUpcomingReminderCard(EventModel event) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    Color categoryColor = _getCategoryColor(event.color);
+    final now = DateTime.now();
+    final daysUntil = event.eventDate.difference(now).inDays;
+    final hoursUntil = event.eventDate.difference(now).inHours;
+
+    String timeUntilText;
+    if (daysUntil > 0) {
+      timeUntilText = 'in $daysUntil day${daysUntil > 1 ? 's' : ''}';
+    } else if (hoursUntil > 0) {
+      timeUntilText = 'in $hoursUntil hour${hoursUntil > 1 ? 's' : ''}';
+    } else {
+      timeUntilText = 'Today';
+    }
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: isDark ? Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: categoryColor.withOpacity(0.3), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: categoryColor.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: categoryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  DateFormat('dd').format(event.eventDate),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: categoryColor,
+                  ),
+                ),
+                Text(
+                  DateFormat('MMM').format(event.eventDate),
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: categoryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  event.category,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 5),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: isDark ? Colors.white60 : Colors.grey,
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      '${event.startTime} - ${event.endTime}',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 12,
+                        color: isDark ? Colors.white60 : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: categoryColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    timeUntilText,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: categoryColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.notification_important_outlined,
+            color: categoryColor,
+            size: 24,
+          ),
+        ],
+      ),
+    );
   }
 }

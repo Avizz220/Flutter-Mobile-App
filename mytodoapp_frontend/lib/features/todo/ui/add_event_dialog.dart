@@ -3,6 +3,7 @@ import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/model/event_model.dart';
 import 'package:mytodoapp_frontend/model/todo_model.dart';
 import 'package:mytodoapp_frontend/services/event_services.dart';
+import 'package:mytodoapp_frontend/services/todo_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
@@ -17,10 +18,13 @@ class AddEventDialog extends StatefulWidget {
 }
 
 class _AddEventDialogState extends State<AddEventDialog> {
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController startTimeController = TextEditingController();
   final TextEditingController endTimeController = TextEditingController();
   final EventServices eventServices = EventServices();
+  final TodoServices todoServices = TodoServices();
 
   String selectedCategory = 'Booking';
   String selectedColor = 'blue';
@@ -40,6 +44,11 @@ class _AddEventDialogState extends State<AddEventDialog> {
   void initState() {
     super.initState();
     selectedDate = widget.selectedDate;
+    // Pre-fill title and description if adding from existing todo
+    if (widget.todo != null) {
+      titleController.text = widget.todo!.title;
+      descriptionController.text = widget.todo!.description;
+    }
   }
 
   Future<void> _selectTime(BuildContext context, bool isStartTime) async {
@@ -105,40 +114,74 @@ class _AddEventDialogState extends State<AddEventDialog> {
                 ],
               ),
               SizedBox(height: 10),
-              if (widget.todo != null) ...[
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColor.accentColor.withOpacity(0.1),
+              // Title Field
+              Text(
+                'Title',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: AppColor.accentColor,
+                ),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Enter task title',
+                  hintStyle: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                  enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: AppColor.textfieldbordercolor,
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.todo!.title,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        widget.todo!.description,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColor.accentColor),
+                  ),
+                  prefixIcon: Icon(Icons.title, color: AppColor.accentColor),
+                ),
+              ),
+              SizedBox(height: 15),
+              // Description Field
+              Text(
+                'Description',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: AppColor.accentColor,
+                ),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Enter task description',
+                  hintStyle: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: AppColor.textfieldbordercolor,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: AppColor.accentColor),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.description,
+                    color: AppColor.accentColor,
                   ),
                 ),
-                SizedBox(height: 20),
-              ],
+              ),
+              SizedBox(height: 15),
               Text(
                 'Date',
                 style: TextStyle(
@@ -390,6 +433,38 @@ class _AddEventDialogState extends State<AddEventDialog> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
+                        if (titleController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please enter a title',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (descriptionController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please enter a description',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Poppins',
+                                ),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                          return;
+                        }
+
                         if (locationController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -421,18 +496,38 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           );
                           return;
                         }
-
                         try {
                           final user = FirebaseAuth.instance.currentUser;
                           if (user == null) return;
+
+                          String todoID;
+
+                          // If no existing todo, create a new one
+                          if (widget.todo == null) {
+                            todoID =
+                                DateTime.now().millisecondsSinceEpoch
+                                    .toString();
+                            final newTodo = TodoModel(
+                              todoID: todoID,
+                              title: titleController.text,
+                              description: descriptionController.text,
+                              userID: user.uid,
+                              isCompleted: false,
+                              createdAt: DateTime.now(),
+                            );
+
+                            await todoServices.addTodoDatabase(newTodo);
+                          } else {
+                            todoID = widget.todo!.todoID;
+                          }
 
                           final eventID =
                               DateTime.now().millisecondsSinceEpoch.toString();
                           final event = EventModel(
                             eventID: eventID,
                             userID: user.uid,
-                            taskID: widget.todo?.todoID ?? '',
-                            title: widget.todo?.title ?? 'Event',
+                            taskID: todoID,
+                            title: titleController.text,
                             location: locationController.text,
                             eventDate: selectedDate,
                             startTime: startTime!.format(context),
@@ -448,7 +543,9 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Event added to calendar!',
+                                widget.todo == null
+                                    ? 'Task and event added successfully!'
+                                    : 'Event added to calendar!',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Poppins',
@@ -461,7 +558,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                'Failed to add event: ${e.toString()}',
+                                'Failed to add: ${e.toString()}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: 'Poppins',
