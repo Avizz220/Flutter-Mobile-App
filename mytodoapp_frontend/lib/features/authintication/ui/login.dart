@@ -158,26 +158,26 @@ class _LoginscreenState extends State<Loginscreen> {
                                   SizedBox(height: 15),
                                   isLoading
                                       ? SizedBox(
-                                          height: 35,
-                                          width: screenwidth,
-                                          child: Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        )
-                                      : GestureDetector(
-                                          onTap: () {
-                                            authBloc.add(
-                                              SignInEvent(
-                                                email: emailcontroller.text,
-                                                password: passwordcontroller.text,
-                                              ),
-                                            );
-                                          },
-                                          child: CustomeButton(
-                                            btnwidth: screenwidth,
-                                            btntext: "Login",
-                                          ),
+                                        height: 35,
+                                        width: screenwidth,
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
                                         ),
+                                      )
+                                      : GestureDetector(
+                                        onTap: () {
+                                          authBloc.add(
+                                            SignInEvent(
+                                              email: emailcontroller.text,
+                                              password: passwordcontroller.text,
+                                            ),
+                                          );
+                                        },
+                                        child: CustomeButton(
+                                          btnwidth: screenwidth,
+                                          btntext: "Login",
+                                        ),
+                                      ),
                                   SizedBox(height: 20),
                                   Row(
                                     children: [
