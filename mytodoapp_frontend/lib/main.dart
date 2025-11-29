@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
+import 'package:mytodoapp_frontend/firebase_options.dart';
+import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
+import 'package:mytodoapp_frontend/features/authintication/ui/signup.dart';
 import 'package:mytodoapp_frontend/features/home/ui/homepage.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/addtask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/edittask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/notifications.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/viewtask.dart';
-import 'package:mytodoapp_frontend/firebase_options.dart';
 import 'package:mytodoapp_frontend/splash_page.dart';
 
 Future<void> main() async {
