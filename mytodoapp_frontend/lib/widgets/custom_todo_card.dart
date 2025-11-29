@@ -8,6 +8,7 @@ class CustomeTodoCard extends StatefulWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onToggleComplete;
+  final VoidCallback? onCardTap;
 
   const CustomeTodoCard({
     super.key,
@@ -17,6 +18,7 @@ class CustomeTodoCard extends StatefulWidget {
     this.onEdit,
     this.onDelete,
     this.onToggleComplete,
+    this.onCardTap,
   });
 
   @override
@@ -27,63 +29,66 @@ class _CustomeTodoCardState extends State<CustomeTodoCard> {
   @override
   Widget build(BuildContext context) {
     double screenwidth = MediaQuery.of(context).size.width;
-    return Container(
-      width: screenwidth,
-      height: 70,
-      margin: EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColor.accentColor.withOpacity(0.5)),
-      ),
-      child: Row(
-        children: [
-          Checkbox(
-            value: widget.isTaskCompleted,
-            onChanged: (value) {
-              if (widget.onToggleComplete != null) {
-                widget.onToggleComplete!();
-              }
-            },
-            activeColor: AppColor.accentColor,
-          ),
-          Expanded(
-            child: Text(
-              widget.cardtitle,
-              style: TextStyle(
-                fontFamily: "poppins",
-                color:
-                    widget.isTaskCompleted
-                        ? AppColor.fontcolor
-                        : AppColor.accentColor,
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-                decoration:
-                    widget.isTaskCompleted
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-              ),
-              overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: widget.onCardTap,
+      child: Container(
+        width: screenwidth,
+        height: 70,
+        margin: EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: AppColor.accentColor.withOpacity(0.5)),
+        ),
+        child: Row(
+          children: [
+            Checkbox(
+              value: widget.isTaskCompleted,
+              onChanged: (value) {
+                if (widget.onToggleComplete != null) {
+                  widget.onToggleComplete!();
+                }
+              },
+              activeColor: AppColor.accentColor,
             ),
-          ),
-          Spacer(),
-          widget.isTaskCompleted
-              ? SizedBox(width: 10)
-              : Column(
-                children: [
-                  Spacer(),
-                  GestureDetector(
-                    onTap: widget.onEdit,
-                    child: Icon(Icons.edit),
-                  ),
-                  SizedBox(height: 5),
-                  GestureDetector(
-                    onTap: widget.onDelete,
-                    child: Icon(Icons.delete, color: Colors.red),
-                  ),
-                  Spacer(),
-                ],
+            Expanded(
+              child: Text(
+                widget.cardtitle,
+                style: TextStyle(
+                  fontFamily: "poppins",
+                  color:
+                      widget.isTaskCompleted
+                          ? AppColor.fontcolor
+                          : AppColor.accentColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  decoration:
+                      widget.isTaskCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-        ],
+            ),
+            Spacer(),
+            widget.isTaskCompleted
+                ? SizedBox(width: 10)
+                : Column(
+                  children: [
+                    Spacer(),
+                    GestureDetector(
+                      onTap: widget.onEdit,
+                      child: Icon(Icons.edit),
+                    ),
+                    SizedBox(height: 5),
+                    GestureDetector(
+                      onTap: widget.onDelete,
+                      child: Icon(Icons.delete, color: Colors.red),
+                    ),
+                    Spacer(),
+                  ],
+                ),
+          ],
+        ),
       ),
     );
   }

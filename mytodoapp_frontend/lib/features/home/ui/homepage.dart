@@ -3,10 +3,14 @@ import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/addtask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/edittask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/notifications.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/calendar_events.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/add_event_dialog.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/event_detail.dart';
 import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
 import 'package:mytodoapp_frontend/model/todo_model.dart';
 import 'package:mytodoapp_frontend/services/todo_services.dart';
 import 'package:mytodoapp_frontend/services/notification_services_db.dart';
+import 'package:mytodoapp_frontend/services/event_services.dart';
 import 'package:mytodoapp_frontend/widgets/custom_todo_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,6 +26,7 @@ class HomePageScreen extends StatefulWidget {
 class _HomePageScreenState extends State<HomePageScreen> {
   final TodoServices todoServices = TodoServices();
   final NotificationServices notificationServices = NotificationServices();
+  final EventServices eventServices = EventServices();
   String userName = '';
   String currentDate = '';
 
@@ -82,6 +87,19 @@ class _HomePageScreenState extends State<HomePageScreen> {
               ),
             ),
             Spacer(),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CalendarEventsScreen()),
+                );
+              },
+              child: Icon(
+                Icons.calendar_today,
+                size: 24,
+              ),
+            ),
+            SizedBox(width: 20),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -370,6 +388,33 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                       cardtitle: todo.title,
                                       btnvisible: false,
                                       isTaskCompleted: todo.isCompleted,
+                                      onCardTap: () async {
+                                        final event = await eventServices.getEventByTaskId(todo.todoID);
+                                        if (event != null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => EventDetailScreen(
+                                                event: event,
+                                                todo: todo,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'This task is not added to calendar yet',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'Poppins',
+                                                ),
+                                              ),
+                                              backgroundColor: Colors.orange,
+                                            ),
+                                          );
+                                        }
+                                      },
                                       onToggleComplete: () async {
                                         try {
                                           await todoServices.toggleTodoComplete(
