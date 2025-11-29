@@ -4,6 +4,6 @@ part of 'auth_bloc.dart';
 sealed class AuthEvent {}
 
 class SignUpEvent extends AuthEvent {
-  final UserModel usermodel;
-  SignUpEvent({required.this.usermodel});
+  final UserModel userModel;
+  SignUpEvent({required this.userModel});
 }
