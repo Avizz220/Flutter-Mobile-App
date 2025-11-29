@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/model/todo_model.dart';
 import 'package:mytodoapp_frontend/services/todo_services.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/add_event_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Addtask extends StatefulWidget {
@@ -219,6 +220,85 @@ class _MyWidgetState extends State<Addtask> {
                             backgroundColor: Colors.green,
                           ),
                         );
+
+                        // Show dialog to add task to calendar
+                        final addToCalendar = await showDialog<bool>(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                title: Text(
+                                  'Add to Calendar',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today,
+                                      size: 50,
+                                      color: AppColor.accentColor,
+                                    ),
+                                    SizedBox(height: 15),
+                                    Text(
+                                      'Would you like to add this task to your calendar?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, false),
+                                    child: Text(
+                                      'Not Now',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColor.accentColor,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Add to Calendar',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        );
+
+                        if (addToCalendar == true) {
+                          await showDialog(
+                            context: context,
+                            builder:
+                                (context) => AddEventDialog(
+                                  todo: todo,
+                                  selectedDate: DateTime.now(),
+                                ),
+                          );
+                        }
 
                         Navigator.pop(context);
                       } catch (e) {
