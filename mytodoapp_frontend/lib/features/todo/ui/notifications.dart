@@ -106,10 +106,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               return Center(
                 child: Text(
                   'Error loading notifications',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    color: Colors.red,
-                  ),
+                  style: TextStyle(fontFamily: 'Poppins', color: Colors.red),
                 ),
               );
             }
@@ -299,8 +296,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           fontWeight: FontWeight.w400,
                                           fontSize: 10,
                                           fontFamily: 'Poppins',
-                                          color: AppColor.fontcolor
-                                              .withOpacity(0.6),
+                                          color: AppColor.fontcolor.withOpacity(
+                                            0.6,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -312,7 +310,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       fontWeight: FontWeight.w400,
                                       fontSize: 11,
                                       fontFamily: 'Poppins',
-                                      color: AppColor.fontcolor.withOpacity(0.7),
+                                      color: AppColor.fontcolor.withOpacity(
+                                        0.7,
+                                      ),
                                     ),
                                   ),
                                 ],

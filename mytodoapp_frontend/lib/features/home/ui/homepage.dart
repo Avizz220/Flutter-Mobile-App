@@ -86,9 +86,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => NotificationScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => NotificationScreen()),
                 );
               },
               child: Stack(
@@ -138,35 +136,36 @@ class _HomePageScreenState extends State<HomePageScreen> {
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(
-                    'Logout',
-                    style: TextStyle(fontFamily: 'Poppins'),
-                  ),
-                  content: Text(
-                    'Are you sure you want to logout?',
-                    style: TextStyle(fontFamily: 'Poppins'),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text(
-                        'Cancel',
+                builder:
+                    (context) => AlertDialog(
+                      title: Text(
+                        'Logout',
                         style: TextStyle(fontFamily: 'Poppins'),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text(
-                        'Logout',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Colors.red,
-                        ),
+                      content: Text(
+                        'Are you sure you want to logout?',
+                        style: TextStyle(fontFamily: 'Poppins'),
                       ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(fontFamily: 'Poppins'),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
               );
 
               if (confirm == true) {

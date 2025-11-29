@@ -49,14 +49,15 @@ class NotificationServices {
           .where('userID', isEqualTo: user.uid)
           .snapshots()
           .map((snapshot) {
-        final notifications = snapshot.docs.map((doc) {
-          final data = doc.data();
-          return NotificationModel.fromJson(data);
-        }).toList();
+            final notifications =
+                snapshot.docs.map((doc) {
+                  final data = doc.data();
+                  return NotificationModel.fromJson(data);
+                }).toList();
 
-        notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        return notifications;
-      });
+            notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            return notifications;
+          });
     } catch (e) {
       return Stream.value([]);
     }
@@ -77,11 +78,12 @@ class NotificationServices {
       final user = auth.currentUser;
       if (user == null) return;
 
-      final snapshot = await firestore
-          .collection('Notifications')
-          .where('userID', isEqualTo: user.uid)
-          .where('isRead', isEqualTo: false)
-          .get();
+      final snapshot =
+          await firestore
+              .collection('Notifications')
+              .where('userID', isEqualTo: user.uid)
+              .where('isRead', isEqualTo: false)
+              .get();
 
       for (var doc in snapshot.docs) {
         await doc.reference.update({'isRead': true});
@@ -96,11 +98,12 @@ class NotificationServices {
       final user = auth.currentUser;
       if (user == null) return 0;
 
-      final snapshot = await firestore
-          .collection('Notifications')
-          .where('userID', isEqualTo: user.uid)
-          .where('isRead', isEqualTo: false)
-          .get();
+      final snapshot =
+          await firestore
+              .collection('Notifications')
+              .where('userID', isEqualTo: user.uid)
+              .where('isRead', isEqualTo: false)
+              .get();
 
       return snapshot.docs.length;
     } catch (e) {

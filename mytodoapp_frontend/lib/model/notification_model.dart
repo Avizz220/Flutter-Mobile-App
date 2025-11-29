@@ -40,7 +40,9 @@ class NotificationModel {
       message: json['message'] ?? '',
       type: json['type'] ?? '',
       isRead: json['isRead'] ?? false,
-      createdAt: DateTime.parse(json['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['createdAt'] ?? DateTime.now().toIso8601String(),
+      ),
       taskID: json['taskID'],
     );
   }

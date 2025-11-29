@@ -11,7 +11,7 @@ class TodoServices {
   Future<void> addTodoDatabase(TodoModel todo) async {
     try {
       await firestore.collection('Todos').doc(todo.todoID).set(todo.toJson());
-      
+
       await notificationServices.createNotification(
         title: 'New Task Created',
         message: 'You have created a new task: "${todo.title}"',
@@ -86,7 +86,7 @@ class TodoServices {
       if (currentStatus == false) {
         final taskDoc = await firestore.collection('Todos').doc(todoID).get();
         final taskTitle = taskDoc.data()?['title'] ?? 'Task';
-        
+
         await notificationServices.createNotification(
           title: 'Task Completed',
           message: 'Well done! You have completed: "$taskTitle"',
