@@ -8,10 +8,11 @@ class Authservices {
 
   Future<void> signUpUser(UserModel user) async {
     try {
-      UserCredential userCredentials = await auth.createUserWithEmailAndPassword(
-        email: user.email,
-        password: user.password,
-      );
+      UserCredential userCredentials = await auth
+          .createUserWithEmailAndPassword(
+            email: user.email,
+            password: user.password,
+          );
 
       if (userCredentials.user != null) {
         UserModel finalUser = UserModel(
@@ -21,10 +22,11 @@ class Authservices {
           password: user.password,
           fcmToken: user.fcmToken,
         );
-        
-        await firestore.collection('Users').doc(userCredentials.user!.uid).set(
-          finalUser.toJason(),
-        );
+
+        await firestore
+            .collection('Users')
+            .doc(userCredentials.user!.uid)
+            .set(finalUser.toJason());
       }
     } catch (e) {
       rethrow;

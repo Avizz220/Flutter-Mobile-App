@@ -123,21 +123,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           isLoading
                               ? Center(child: CircularProgressIndicator())
                               : GestureDetector(
-                                  onTap: () {
-                                    final user = UserModel(
-                                      userID: '',
-                                      name: namecontroller.text,
-                                      email: emailcontroller.text,
-                                      password: passwordcontroller.text,
-                                      fcmToken: '',
-                                    );
-                                    authBloc.add(SignUpEvent(userModel: user));
-                                  },
-                                  child: CustomeButton(
-                                    btnwidth: screenwidth,
-                                    btntext: "Sign Up",
-                                  ),
+                                onTap: () {
+                                  final user = UserModel(
+                                    userID: '',
+                                    name: namecontroller.text,
+                                    email: emailcontroller.text,
+                                    password: passwordcontroller.text,
+                                    fcmToken: '',
+                                  );
+                                  authBloc.add(SignUpEvent(userModel: user));
+                                },
+                                child: CustomeButton(
+                                  btnwidth: screenwidth,
+                                  btntext: "Sign Up",
                                 ),
+                              ),
                           SizedBox(height: 15),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
