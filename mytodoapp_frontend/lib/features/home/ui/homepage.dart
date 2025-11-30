@@ -38,10 +38,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
     super.initState();
     _loadUserData();
     _setCurrentDate();
-    
+
     // Reset flag on init
     _hasShownReminders = false;
-    
+
     // Schedule reminder check after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('PostFrameCallback: Scheduling reminder check');
@@ -51,7 +51,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Future<void> _checkAndShowTodayReminders() async {
     print('Starting reminder check...');
-    
+
     // Small delay to ensure UI is ready
     await Future.delayed(Duration(milliseconds: 500));
 
@@ -77,21 +77,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
       print('Checking events from $todayStart to $todayEnd');
 
       // Get all events for today from the Events collection
-      final eventsSnapshot = await FirebaseFirestore.instance
-          .collection('Events')
-          .where('userID', isEqualTo: user.uid)
-          .get();
+      final eventsSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Events')
+              .where('userID', isEqualTo: user.uid)
+              .get();
 
       print('Total events found: ${eventsSnapshot.docs.length}');
 
       List<Map<String, dynamic>> todayEvents = [];
-      
+
       for (var doc in eventsSnapshot.docs) {
         final data = doc.data();
-        
+
         if (data['eventDate'] != null) {
           DateTime eventDate;
-          
+
           // Handle both Timestamp and String formats
           if (data['eventDate'] is Timestamp) {
             eventDate = (data['eventDate'] as Timestamp).toDate();
@@ -100,25 +101,27 @@ class _HomePageScreenState extends State<HomePageScreen> {
           } else {
             continue;
           }
-          
+
           print('Event: ${data['title']} - Date: $eventDate');
-          
+
           // Check if event is today
           if (eventDate.year == now.year &&
               eventDate.month == now.month &&
               eventDate.day == now.day) {
             print('  -> This event is today!');
-            
+
             // Get the associated task to check if it's completed
-            if (data['taskID'] != null && data['taskID'].toString().isNotEmpty) {
+            if (data['taskID'] != null &&
+                data['taskID'].toString().isNotEmpty) {
               try {
-                final taskDoc = await FirebaseFirestore.instance
-                    .collection('Users')
-                    .doc(user.uid)
-                    .collection('Todos')
-                    .doc(data['taskID'])
-                    .get();
-                
+                final taskDoc =
+                    await FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(user.uid)
+                        .collection('Todos')
+                        .doc(data['taskID'])
+                        .get();
+
                 if (taskDoc.exists) {
                   final taskData = taskDoc.data();
                   if (taskData != null && taskData['isCompleted'] == true) {
@@ -130,7 +133,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 print('  -> Error checking task status: $e');
               }
             }
-            
+
             data['eventID'] = doc.id;
             data['eventDateParsed'] = eventDate;
             todayEvents.add(data);
@@ -160,7 +163,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         }
         await _showTaskReminder(todayEvents[i], i + 1, todayEvents.length);
       }
-      
+
       print('All reminders shown successfully');
     } catch (e, stackTrace) {
       print('Error showing reminders: $e');
@@ -185,11 +188,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
       final overlayState = Overlay.of(context);
 
       final overlayEntry = OverlayEntry(
-        builder: (context) => _TopNotificationBanner(
-          task: task,
-          current: current,
-          total: total,
-        ),
+        builder:
+            (context) => _TopNotificationBanner(
+              task: task,
+              current: current,
+              total: total,
+            ),
       );
 
       overlayState.insert(overlayEntry);
@@ -197,7 +201,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
       // Auto-dismiss after 3.5 seconds
       await Future.delayed(Duration(milliseconds: 3500));
-      
+
       if (overlayEntry.mounted) {
         overlayEntry.remove();
         print('Notification removed');
@@ -846,23 +850,17 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
       duration: Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: Offset(0, -1),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
-    
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    ));
-    
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+
     _controller.forward();
   }
 
@@ -875,14 +873,14 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Get event/task data
     final title = widget.task['title'] ?? '';
     final location = widget.task['location'] ?? '';
     final startTime = widget.task['startTime'] ?? '';
     final endTime = widget.task['endTime'] ?? '';
     final category = widget.task['category'] ?? '';
-    
+
     // Get category color
     Color categoryColor = _getCategoryColor(category);
 
@@ -921,14 +919,16 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isDark 
-                            ? Color(0xFF1E1E1E).withOpacity(0.95)
-                            : Colors.white.withOpacity(0.95),
+                        color:
+                            isDark
+                                ? Color(0xFF1E1E1E).withOpacity(0.95)
+                                : Colors.white.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: isDark 
-                              ? Colors.white.withOpacity(0.1)
-                              : Colors.black.withOpacity(0.05),
+                          color:
+                              isDark
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.black.withOpacity(0.05),
                           width: 1.5,
                         ),
                       ),
@@ -953,7 +953,7 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                               ),
                             ),
                           ),
-                          
+
                           // Main content
                           Padding(
                             padding: EdgeInsets.fromLTRB(20, 16, 16, 16),
@@ -985,7 +985,8 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                     SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Upcoming Event',
@@ -993,9 +994,11 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                               fontFamily: 'Poppins',
                                               fontWeight: FontWeight.w600,
                                               fontSize: 13,
-                                              color: isDark 
-                                                  ? Colors.white.withOpacity(0.9)
-                                                  : Color(0xFF2D3748),
+                                              color:
+                                                  isDark
+                                                      ? Colors.white
+                                                          .withOpacity(0.9)
+                                                      : Color(0xFF2D3748),
                                               letterSpacing: 0.3,
                                             ),
                                           ),
@@ -1006,9 +1009,11 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                               fontFamily: 'Poppins',
                                               fontWeight: FontWeight.w400,
                                               fontSize: 11,
-                                              color: isDark 
-                                                  ? Colors.white.withOpacity(0.5)
-                                                  : Color(0xFF718096),
+                                              color:
+                                                  isDark
+                                                      ? Colors.white
+                                                          .withOpacity(0.5)
+                                                      : Color(0xFF718096),
                                             ),
                                           ),
                                         ],
@@ -1020,47 +1025,57 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                       child: Container(
                                         padding: EdgeInsets.all(6),
                                         decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.white.withOpacity(0.1)
-                                              : Colors.black.withOpacity(0.05),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color:
+                                              isDark
+                                                  ? Colors.white.withOpacity(
+                                                    0.1,
+                                                  )
+                                                  : Colors.black.withOpacity(
+                                                    0.05,
+                                                  ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Icon(
                                           Icons.close_rounded,
                                           size: 16,
-                                          color: isDark 
-                                              ? Colors.white.withOpacity(0.6)
-                                              : Color(0xFF718096),
+                                          color:
+                                              isDark
+                                                  ? Colors.white.withOpacity(
+                                                    0.6,
+                                                  )
+                                                  : Color(0xFF718096),
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                
+
                                 SizedBox(height: 14),
-                                
+
                                 // Divider
                                 Container(
                                   height: 1,
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        isDark 
+                                        isDark
                                             ? Colors.white.withOpacity(0.05)
                                             : Colors.black.withOpacity(0.05),
-                                        isDark 
+                                        isDark
                                             ? Colors.white.withOpacity(0.1)
                                             : Colors.black.withOpacity(0.1),
-                                        isDark 
+                                        isDark
                                             ? Colors.white.withOpacity(0.05)
                                             : Colors.black.withOpacity(0.05),
                                       ],
                                     ),
                                   ),
                                 ),
-                                
+
                                 SizedBox(height: 14),
-                                
+
                                 // Title
                                 Text(
                                   title,
@@ -1068,15 +1083,18 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w600,
                                     fontSize: 17,
-                                    color: isDark ? Colors.white : Color(0xFF1A202C),
+                                    color:
+                                        isDark
+                                            ? Colors.white
+                                            : Color(0xFF1A202C),
                                     height: 1.3,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                
+
                                 SizedBox(height: 12),
-                                
+
                                 // Info Row
                                 Wrap(
                                   spacing: 12,
@@ -1086,22 +1104,30 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                     if (startTime.isNotEmpty)
                                       _buildInfoChip(
                                         icon: Icons.schedule_rounded,
-                                        text: startTime.isNotEmpty && endTime.isNotEmpty
-                                            ? '$startTime - $endTime'
-                                            : startTime,
-                                        color: isDark ? Colors.blue[300]! : Colors.blue[600]!,
+                                        text:
+                                            startTime.isNotEmpty &&
+                                                    endTime.isNotEmpty
+                                                ? '$startTime - $endTime'
+                                                : startTime,
+                                        color:
+                                            isDark
+                                                ? Colors.blue[300]!
+                                                : Colors.blue[600]!,
                                         isDark: isDark,
                                       ),
-                                    
+
                                     // Location chip
                                     if (location.isNotEmpty)
                                       _buildInfoChip(
                                         icon: Icons.location_on_rounded,
                                         text: location,
-                                        color: isDark ? Colors.orange[300]! : Colors.orange[600]!,
+                                        color:
+                                            isDark
+                                                ? Colors.orange[300]!
+                                                : Colors.orange[600]!,
                                         isDark: isDark,
                                       ),
-                                    
+
                                     // Category chip
                                     if (category.isNotEmpty)
                                       _buildCategoryChip(
@@ -1138,19 +1164,12 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
       decoration: BoxDecoration(
         color: color.withOpacity(isDark ? 0.15 : 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: color,
-          ),
+          Icon(icon, size: 14, color: color),
           SizedBox(width: 5),
           Flexible(
             child: Text(
@@ -1179,16 +1198,10 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            color.withOpacity(0.2),
-            color.withOpacity(0.15),
-          ],
+          colors: [color.withOpacity(0.2), color.withOpacity(0.15)],
         ),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: color.withOpacity(0.4),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1196,10 +1209,7 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           SizedBox(width: 6),
           Text(
