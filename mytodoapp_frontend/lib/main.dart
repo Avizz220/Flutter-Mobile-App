@@ -1,47 +1,89 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mytodoapp_frontend/firebase_options.dart';
-import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
-import 'package:mytodoapp_frontend/features/authintication/ui/signup.dart';
-import 'package:mytodoapp_frontend/features/home/ui/homepage.dart';
-import 'package:mytodoapp_frontend/features/todo/ui/addtask.dart';
-import 'package:mytodoapp_frontend/features/todo/ui/edittask.dart';
-import 'package:mytodoapp_frontend/features/todo/ui/notifications.dart';
-import 'package:mytodoapp_frontend/features/todo/ui/viewtask.dart';
 import 'package:mytodoapp_frontend/splash_page.dart';
+import 'package:mytodoapp_frontend/contants/colors.dart';
+import 'package:mytodoapp_frontend/services/theme_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+
+  // Load saved theme color and mode
+  final themeService = ThemeService();
+  final savedTheme = await themeService.getThemeColor();
+  final isDarkMode = await themeService.getThemeMode();
+  AppColor.updateAccentColor(ThemeService.getColorFromName(savedTheme));
+
+  runApp(MyApp(isDarkMode: isDarkMode));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final bool isDarkMode;
 
-  // This widget is the root of your application.
+  const MyApp({super.key, required this.isDarkMode});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+
+  // Static method to access state from anywhere
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+}
+
+class _MyAppState extends State<MyApp> {
+  late ThemeMode _themeMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeMode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  void toggleTheme(bool isDark) {
+    setState(() {
+      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      themeMode: _themeMode,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        brightness: Brightness.light,
+        primaryColor: AppColor.accentColor,
+        scaffoldBackgroundColor: Colors.grey[50],
+        colorScheme: ColorScheme.light(
+          primary: AppColor.accentColor,
+          secondary: AppColor.accentColor,
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        cardColor: Colors.white,
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: AppColor.accentColor,
+        scaffoldBackgroundColor: Color(0xFF121212),
+        colorScheme: ColorScheme.dark(
+          primary: AppColor.accentColor,
+          secondary: AppColor.accentColor,
+          surface: Color(0xFF1E1E1E),
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color(0xFF1E1E1E),
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        cardColor: Color(0xFF1E1E1E),
+        useMaterial3: true,
       ),
       home: SplashScreen(),
     );

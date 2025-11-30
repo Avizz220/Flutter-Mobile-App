@@ -21,22 +21,34 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextField(
       controller: widget.controller, //Pass the controller
+      style: TextStyle(
+        color: isDark ? Colors.white : Colors.black,
+        fontFamily: 'Poppins',
+      ),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: isDark ? Color(0xFF2C2C2C) : Colors.white,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: widget.bordercolor), //Pass the color
+          borderSide: BorderSide(
+            color: isDark ? Colors.white24 : widget.bordercolor,
+          ), //Pass the color
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: widget.bordercolor),
+          borderSide: BorderSide(
+            color: isDark ? AppColor.accentColor : widget.bordercolor,
+          ),
         ),
         label: Text(
           widget.labeltext,
-          style: TextStyle(color: AppColor.fontcolor, fontFamily: 'Poppins'),
+          style: TextStyle(
+            color: isDark ? Colors.white70 : AppColor.fontcolor,
+            fontFamily: 'Poppins',
+          ),
         ),
       ),
     );

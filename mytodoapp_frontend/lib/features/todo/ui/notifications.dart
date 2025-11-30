@@ -33,6 +33,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
     double screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -41,7 +42,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         toolbarHeight:
             120, //This is the way that we can give height for the appbar
         backgroundColor:
-            Colors.white, //We can also give the background colour for this
+            isDark
+                ? Color(0xFF1E1E1E)
+                : Colors
+                    .white, //We can also give the background colour for this
         title: Text(
           "Notifications",
           style: TextStyle(
@@ -93,7 +97,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: Container(
         width: screenwidth,
-        color: Colors.white,
+        color: isDark ? Color(0xFF121212) : Colors.white,
         height: screenheight - 120,
         child: StreamBuilder<List<NotificationModel>>(
           stream: notificationServices.getNotifications(),
@@ -127,7 +131,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
-                        color: AppColor.fontcolor,
+                        color: isDark ? Colors.white70 : AppColor.fontcolor,
                       ),
                     ),
                   ],
@@ -219,7 +223,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             fontWeight: FontWeight.w400,
                                             fontSize: 10,
                                             fontFamily: 'Poppins',
-                                            color: AppColor.fontcolor,
+                                            color:
+                                                isDark
+                                                    ? Colors.white60
+                                                    : AppColor.fontcolor,
                                           ),
                                         ),
                                       ],
@@ -231,7 +238,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         fontWeight: FontWeight.w400,
                                         fontSize: 11,
                                         fontFamily: 'Poppins',
-                                        color: AppColor.fontcolor,
+                                        color:
+                                            isDark
+                                                ? Colors.white70
+                                                : AppColor.fontcolor,
                                       ),
                                     ),
                                   ],
@@ -255,7 +265,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
-                          color: AppColor.fontcolor,
+                          color: isDark ? Colors.white70 : AppColor.fontcolor,
                         ),
                       ),
                     ),
@@ -266,7 +276,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           vertical: 12,
                         ),
                         margin: EdgeInsets.only(bottom: 1),
-                        color: Colors.white,
+                        color: isDark ? Color(0xFF1E1E1E) : Colors.white,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -286,7 +296,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                             fontWeight: FontWeight.w500,
                                             fontSize: 13,
                                             fontFamily: 'Poppins',
-                                            color: AppColor.fontcolor,
+                                            color:
+                                                isDark
+                                                    ? Colors.white60
+                                                    : AppColor.fontcolor,
                                           ),
                                         ),
                                       ),
@@ -296,9 +309,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           fontWeight: FontWeight.w400,
                                           fontSize: 10,
                                           fontFamily: 'Poppins',
-                                          color: AppColor.fontcolor.withOpacity(
-                                            0.6,
-                                          ),
+                                          color:
+                                              isDark
+                                                  ? Colors.white38
+                                                  : AppColor.fontcolor
+                                                      .withOpacity(0.6),
                                         ),
                                       ),
                                     ],
@@ -310,9 +325,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       fontWeight: FontWeight.w400,
                                       fontSize: 11,
                                       fontFamily: 'Poppins',
-                                      color: AppColor.fontcolor.withOpacity(
-                                        0.7,
-                                      ),
+                                      color:
+                                          isDark
+                                              ? Colors.white54
+                                              : AppColor.fontcolor.withOpacity(
+                                                0.7,
+                                              ),
                                     ),
                                   ),
                                 ],

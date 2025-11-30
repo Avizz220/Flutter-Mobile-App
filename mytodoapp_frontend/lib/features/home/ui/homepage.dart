@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/addtask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/edittask.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/notifications.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/calendar_events.dart';
-import 'package:mytodoapp_frontend/features/todo/ui/add_event_dialog.dart';
 import 'package:mytodoapp_frontend/features/todo/ui/event_detail.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/add_event_dialog.dart';
 import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
+import 'package:mytodoapp_frontend/features/settings/ui/settings.dart';
 import 'package:mytodoapp_frontend/model/todo_model.dart';
 import 'package:mytodoapp_frontend/services/todo_services.dart';
 import 'package:mytodoapp_frontend/services/notification_services_db.dart';
@@ -29,12 +31,188 @@ class _HomePageScreenState extends State<HomePageScreen> {
   final EventServices eventServices = EventServices();
   String userName = '';
   String currentDate = '';
+  bool _hasShownReminders = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _setCurrentDate();
+
+    // Reset flag on init
+    _hasShownReminders = false;
+
+    // Schedule reminder check after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('PostFrameCallback: Scheduling reminder check');
+      _checkAndShowTodayReminders();
+    });
+  }
+
+  Future<void> _checkAndShowTodayReminders() async {
+    print('Starting reminder check...');
+
+    // Small delay to ensure UI is ready
+    await Future.delayed(Duration(milliseconds: 500));
+
+    if (_hasShownReminders) {
+      print('Reminders already shown, skipping');
+      return;
+    }
+    _hasShownReminders = true;
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print('No user logged in');
+        return;
+      }
+
+      print('User ID: ${user.uid}');
+
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+
+      print('Checking events from $todayStart to $todayEnd');
+
+      // Get all events for today from the Events collection
+      final eventsSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Events')
+              .where('userID', isEqualTo: user.uid)
+              .get();
+
+      print('Total events found: ${eventsSnapshot.docs.length}');
+
+      List<Map<String, dynamic>> todayEvents = [];
+
+      for (var doc in eventsSnapshot.docs) {
+        final data = doc.data();
+
+        if (data['eventDate'] != null) {
+          DateTime eventDate;
+
+          // Handle both Timestamp and String formats
+          if (data['eventDate'] is Timestamp) {
+            eventDate = (data['eventDate'] as Timestamp).toDate();
+          } else if (data['eventDate'] is String) {
+            eventDate = DateTime.parse(data['eventDate']);
+          } else {
+            continue;
+          }
+
+          print('Event: ${data['title']} - Date: $eventDate');
+
+          // Check if event is today
+          if (eventDate.year == now.year &&
+              eventDate.month == now.month &&
+              eventDate.day == now.day) {
+            print('  -> This event is today!');
+
+            // Get the associated task to check if it's completed
+            if (data['taskID'] != null &&
+                data['taskID'].toString().isNotEmpty) {
+              try {
+                final taskDoc =
+                    await FirebaseFirestore.instance
+                        .collection('Users')
+                        .doc(user.uid)
+                        .collection('Todos')
+                        .doc(data['taskID'])
+                        .get();
+
+                if (taskDoc.exists) {
+                  final taskData = taskDoc.data();
+                  if (taskData != null && taskData['isCompleted'] == true) {
+                    print('  -> Task is already completed, skipping');
+                    continue;
+                  }
+                }
+              } catch (e) {
+                print('  -> Error checking task status: $e');
+              }
+            }
+
+            data['eventID'] = doc.id;
+            data['eventDateParsed'] = eventDate;
+            todayEvents.add(data);
+          }
+        }
+      }
+
+      if (todayEvents.isEmpty) {
+        print('No events due today');
+        return;
+      }
+
+      print('Found ${todayEvents.length} events due today');
+
+      // Sort by start time
+      todayEvents.sort((a, b) {
+        final aTime = a['startTime'] ?? '';
+        final bTime = b['startTime'] ?? '';
+        return aTime.compareTo(bTime);
+      });
+
+      // Show reminders one by one
+      for (int i = 0; i < todayEvents.length; i++) {
+        if (!mounted) {
+          print('Widget no longer mounted, stopping reminders');
+          break;
+        }
+        await _showTaskReminder(todayEvents[i], i + 1, todayEvents.length);
+      }
+
+      print('All reminders shown successfully');
+    } catch (e, stackTrace) {
+      print('Error showing reminders: $e');
+      print('Stack trace: $stackTrace');
+    }
+  }
+
+  Future<void> _showTaskReminder(
+    Map<String, dynamic> task,
+    int current,
+    int total,
+  ) async {
+    if (!mounted) {
+      print('Widget not mounted, cannot show reminder');
+      return;
+    }
+
+    print('Displaying notification $current of $total: ${task['title']}');
+
+    try {
+      // Ensure we have a valid overlay
+      final overlayState = Overlay.of(context);
+
+      final overlayEntry = OverlayEntry(
+        builder:
+            (context) => _TopNotificationBanner(
+              task: task,
+              current: current,
+              total: total,
+            ),
+      );
+
+      overlayState.insert(overlayEntry);
+      print('Notification inserted into overlay');
+
+      // Auto-dismiss after 3.5 seconds
+      await Future.delayed(Duration(milliseconds: 3500));
+
+      if (overlayEntry.mounted) {
+        overlayEntry.remove();
+        print('Notification removed');
+      }
+
+      // Small delay before showing next reminder for smooth transition
+      await Future.delayed(Duration(milliseconds: 300));
+    } catch (e, stackTrace) {
+      print('Error showing notification: $e');
+      print('Stack trace: $stackTrace');
+    }
   }
 
   void _setCurrentDate() {
@@ -70,9 +248,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double screenheight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     double screenwidth = MediaQuery.of(context).size.width;
-    double appbarHeight = AppBar().preferredSize.height;
 
     return Scaffold(
       appBar: AppBar(
@@ -97,6 +274,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 );
               },
               child: Icon(Icons.calendar_today, size: 24),
+            ),
+            SizedBox(width: 20),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                );
+              },
+              child: Icon(Icons.settings_outlined, size: 24),
             ),
             SizedBox(width: 20),
             GestureDetector(
@@ -229,6 +416,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             fontWeight: FontWeight.w700,
                             fontFamily: "Poppins",
                             fontSize: 24,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                         Text(
@@ -332,6 +520,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             fontFamily: "Poppins",
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -403,20 +592,74 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                             ),
                                           );
                                         } else {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'This task is not added to calendar yet',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontFamily: 'Poppins',
+                                          // Show dialog asking to add to calendar
+                                          final addToCalendar = await showDialog<
+                                            bool
+                                          >(
+                                            context: context,
+                                            builder:
+                                                (context) => AlertDialog(
+                                                  title: Text(
+                                                    'Add to Calendar',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  content: Text(
+                                                    'This task is not in your calendar. Would you like to add it now?',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                    ),
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed:
+                                                          () => Navigator.pop(
+                                                            context,
+                                                            false,
+                                                          ),
+                                                      child: Text(
+                                                        'Cancel',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Poppins',
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed:
+                                                          () => Navigator.pop(
+                                                            context,
+                                                            true,
+                                                          ),
+                                                      child: Text(
+                                                        'Add to Calendar',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Poppins',
+                                                          color:
+                                                              AppColor
+                                                                  .accentColor,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
-                                              backgroundColor: Colors.orange,
-                                            ),
                                           );
+
+                                          if (addToCalendar == true) {
+                                            await showDialog(
+                                              context: context,
+                                              builder:
+                                                  (context) => AddEventDialog(
+                                                    todo: todo,
+                                                    selectedDate:
+                                                        DateTime.now(),
+                                                  ),
+                                            );
+                                          }
                                         }
                                       },
                                       onToggleComplete: () async {
@@ -576,5 +819,427 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ),
       ),
     );
+  }
+}
+
+class _TopNotificationBanner extends StatefulWidget {
+  final Map<String, dynamic> task;
+  final int current;
+  final int total;
+
+  const _TopNotificationBanner({
+    required this.task,
+    required this.current,
+    required this.total,
+  });
+
+  @override
+  State<_TopNotificationBanner> createState() => _TopNotificationBannerState();
+}
+
+class _TopNotificationBannerState extends State<_TopNotificationBanner>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Get event/task data
+    final title = widget.task['title'] ?? '';
+    final location = widget.task['location'] ?? '';
+    final startTime = widget.task['startTime'] ?? '';
+    final endTime = widget.task['endTime'] ?? '';
+    final category = widget.task['category'] ?? '';
+
+    // Get category color
+    Color categoryColor = _getCategoryColor(category);
+
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SafeArea(
+            child: GestureDetector(
+              onVerticalDragUpdate: (details) {
+                // Swipe up to dismiss
+                if (details.delta.dy < -5) {
+                  _controller.reverse();
+                }
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 30,
+                      offset: Offset(0, 15),
+                      spreadRadius: -5,
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color:
+                            isDark
+                                ? Color(0xFF1E1E1E).withOpacity(0.95)
+                                : Colors.white.withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color:
+                              isDark
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.black.withOpacity(0.05),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Stack(
+                        children: [
+                          // Colored accent bar on the left
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 5,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    categoryColor,
+                                    categoryColor.withOpacity(0.6),
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Main content
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(20, 16, 16, 16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Header Row
+                                Row(
+                                  children: [
+                                    // Icon with gradient background
+                                    Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            categoryColor.withOpacity(0.2),
+                                            categoryColor.withOpacity(0.1),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Icon(
+                                        Icons.event_available_rounded,
+                                        color: categoryColor,
+                                        size: 22,
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Upcoming Event',
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 13,
+                                              color:
+                                                  isDark
+                                                      ? Colors.white
+                                                          .withOpacity(0.9)
+                                                      : Color(0xFF2D3748),
+                                              letterSpacing: 0.3,
+                                            ),
+                                          ),
+                                          SizedBox(height: 2),
+                                          Text(
+                                            '${widget.current} of ${widget.total} ${widget.total == 1 ? 'reminder' : 'reminders'}',
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 11,
+                                              color:
+                                                  isDark
+                                                      ? Colors.white
+                                                          .withOpacity(0.5)
+                                                      : Color(0xFF718096),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    // Dismiss button
+                                    GestureDetector(
+                                      onTap: () => _controller.reverse(),
+                                      child: Container(
+                                        padding: EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              isDark
+                                                  ? Colors.white.withOpacity(
+                                                    0.1,
+                                                  )
+                                                  : Colors.black.withOpacity(
+                                                    0.05,
+                                                  ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.close_rounded,
+                                          size: 16,
+                                          color:
+                                              isDark
+                                                  ? Colors.white.withOpacity(
+                                                    0.6,
+                                                  )
+                                                  : Color(0xFF718096),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 14),
+
+                                // Divider
+                                Container(
+                                  height: 1,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        isDark
+                                            ? Colors.white.withOpacity(0.05)
+                                            : Colors.black.withOpacity(0.05),
+                                        isDark
+                                            ? Colors.white.withOpacity(0.1)
+                                            : Colors.black.withOpacity(0.1),
+                                        isDark
+                                            ? Colors.white.withOpacity(0.05)
+                                            : Colors.black.withOpacity(0.05),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+                                SizedBox(height: 14),
+
+                                // Title
+                                Text(
+                                  title,
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 17,
+                                    color:
+                                        isDark
+                                            ? Colors.white
+                                            : Color(0xFF1A202C),
+                                    height: 1.3,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+
+                                SizedBox(height: 12),
+
+                                // Info Row
+                                Wrap(
+                                  spacing: 12,
+                                  runSpacing: 8,
+                                  children: [
+                                    // Time chip
+                                    if (startTime.isNotEmpty)
+                                      _buildInfoChip(
+                                        icon: Icons.schedule_rounded,
+                                        text:
+                                            startTime.isNotEmpty &&
+                                                    endTime.isNotEmpty
+                                                ? '$startTime - $endTime'
+                                                : startTime,
+                                        color:
+                                            isDark
+                                                ? Colors.blue[300]!
+                                                : Colors.blue[600]!,
+                                        isDark: isDark,
+                                      ),
+
+                                    // Location chip
+                                    if (location.isNotEmpty)
+                                      _buildInfoChip(
+                                        icon: Icons.location_on_rounded,
+                                        text: location,
+                                        color:
+                                            isDark
+                                                ? Colors.orange[300]!
+                                                : Colors.orange[600]!,
+                                        isDark: isDark,
+                                      ),
+
+                                    // Category chip
+                                    if (category.isNotEmpty)
+                                      _buildCategoryChip(
+                                        text: category,
+                                        color: categoryColor,
+                                        isDark: isDark,
+                                      ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip({
+    required IconData icon,
+    required String text,
+    required Color color,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(isDark ? 0.15 : 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          SizedBox(width: 5),
+          Flexible(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip({
+    required String text,
+    required Color color,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [color.withOpacity(0.2), color.withOpacity(0.15)],
+        ),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.4), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          SizedBox(width: 6),
+          Text(
+            text,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'booking':
+        return Color(0xFF3B82F6); // Blue
+      case 'ux':
+        return Color(0xFFEC4899); // Pink
+      case 'shopping':
+        return Color(0xFF8B5CF6); // Purple
+      case 'meeting':
+        return Color(0xFFF59E0B); // Yellow/Orange
+      case 'work':
+        return Color(0xFF10B981); // Green
+      default:
+        return Color(0xFF6366F1); // Indigo
+    }
   }
 }
