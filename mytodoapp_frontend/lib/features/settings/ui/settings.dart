@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/features/settings/ui/change_password.dart';
 import 'package:mytodoapp_frontend/features/settings/ui/theme_selector.dart';
+import 'package:mytodoapp_frontend/features/settings/ui/profile_dialog.dart';
 import 'package:mytodoapp_frontend/features/authintication/ui/login.dart';
 import 'package:mytodoapp_frontend/services/theme_service.dart';
 import 'package:mytodoapp_frontend/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -18,11 +21,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final ThemeService _themeService = ThemeService();
   bool _isDarkMode = false;
   bool _isLoadingTheme = true;
+  String? _profilePhotoBase64;
 
   @override
   void initState() {
     super.initState();
     _loadThemeMode();
+    _loadProfilePhoto();
+  }
+
+  Future<void> _loadProfilePhoto() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final doc =
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .doc(user.uid)
+                .get();
+
+        if (doc.exists && doc.data()?['profilePhoto'] != null) {
+          setState(() {
+            _profilePhotoBase64 = doc.data()!['profilePhoto'];
+          });
+        }
+      }
+    } catch (e) {
+      // Silently fail
+    }
   }
 
   Future<void> _loadThemeMode() async {
@@ -106,57 +132,82 @@ class _SettingsScreenState extends State<SettingsScreen> {
         padding: EdgeInsets.all(20),
         children: [
           // Profile Section
-          Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: isDark ? Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 35,
-                  backgroundColor: AppColor.accentColor.withOpacity(0.2),
-                  child: Icon(
-                    Icons.person,
-                    size: 40,
-                    color: AppColor.accentColor,
+          GestureDetector(
+            onTap: () async {
+              final result = await showDialog<String>(
+                context: context,
+                builder: (context) => ProfileDialog(),
+              );
+
+              // Reload profile photo if changed
+              if (result != null) {
+                _loadProfilePhoto();
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: isDark ? Color(0xFF1E1E1E) : Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
                   ),
-                ),
-                SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        user?.displayName ?? 'User',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.white : Colors.black,
+                ],
+              ),
+              child: Row(
+                children: [
+                  _profilePhotoBase64 != null
+                      ? CircleAvatar(
+                        radius: 35,
+                        backgroundImage: MemoryImage(
+                          base64Decode(_profilePhotoBase64!),
+                        ),
+                      )
+                      : CircleAvatar(
+                        radius: 35,
+                        backgroundColor: AppColor.accentColor.withOpacity(0.2),
+                        child: Icon(
+                          Icons.person,
+                          size: 40,
+                          color: AppColor.accentColor,
                         ),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        user?.email ?? '',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          color: Colors.grey[600],
+                  SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user?.displayName ?? 'User',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 4),
+                        Text(
+                          user?.email ?? '',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: Colors.grey[400],
+                  ),
+                ],
+              ),
             ),
           ),
 

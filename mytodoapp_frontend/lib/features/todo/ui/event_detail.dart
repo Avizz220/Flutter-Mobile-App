@@ -179,14 +179,17 @@ class EventDetailScreen extends StatelessWidget {
                                 color: Colors.grey,
                               ),
                               SizedBox(width: 8),
-                              Text(
-                                DateFormat(
-                                  'EEEE, MMMM d, yyyy',
-                                ).format(event.eventDate),
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 13,
-                                  color: Colors.grey.shade700,
+                              Expanded(
+                                child: Text(
+                                  DateFormat(
+                                    'EEEE, MMMM d, yyyy',
+                                  ).format(event.eventDate),
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 13,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
