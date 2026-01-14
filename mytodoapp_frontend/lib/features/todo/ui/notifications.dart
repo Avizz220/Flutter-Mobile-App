@@ -80,6 +80,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           IconButton(
             onPressed: () async {
               await notificationServices.markAllAsRead();
+              if (!mounted) return;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
@@ -123,7 +124,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     Icon(
                       Icons.notifications_off_outlined,
                       size: 80,
-                      color: AppColor.fontcolor.withOpacity(0.3),
+                      color: AppColor.fontcolor.withValues(alpha: 0.3),
                     ),
                     SizedBox(height: 20),
                     Text(
@@ -183,7 +184,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             vertical: 12,
                           ),
                           margin: EdgeInsets.only(bottom: 1),
-                          color: AppColor.accentColor.withOpacity(0.05),
+                          color: AppColor.accentColor.withValues(alpha: 0.05),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -251,7 +252,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                   if (readNotifications.isNotEmpty) ...[
                     Padding(
@@ -313,7 +314,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                               isDark
                                                   ? Colors.white38
                                                   : AppColor.fontcolor
-                                                      .withOpacity(0.6),
+                                                      .withValues(alpha: 0.6),
                                         ),
                                       ),
                                     ],
@@ -328,8 +329,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       color:
                                           isDark
                                               ? Colors.white54
-                                              : AppColor.fontcolor.withOpacity(
-                                                0.7,
+                                              : AppColor.fontcolor.withValues(
+                                                alpha: 0.7,
                                               ),
                                     ),
                                   ),
@@ -339,7 +340,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ],
                         ),
                       );
-                    }).toList(),
+                    })
                   ],
                 ],
               ),

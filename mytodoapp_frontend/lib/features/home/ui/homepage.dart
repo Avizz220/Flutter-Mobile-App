@@ -43,47 +43,30 @@ class _HomePageScreenState extends State<HomePageScreen> {
     _hasShownReminders = false;
 
     // Schedule reminder check after the first frame is rendered
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('PostFrameCallback: Scheduling reminder check');
-      _checkAndShowTodayReminders();
+    WidgetsBinding.instance.addPostFrameCallback((_) {_checkAndShowTodayReminders();
     });
   }
 
-  Future<void> _checkAndShowTodayReminders() async {
-    print('Starting reminder check...');
-
-    // Small delay to ensure UI is ready
+  Future<void> _checkAndShowTodayReminders() async {// Small delay to ensure UI is ready
     await Future.delayed(Duration(milliseconds: 500));
 
-    if (_hasShownReminders) {
-      print('Reminders already shown, skipping');
-      return;
+    if (_hasShownReminders) {return;
     }
     _hasShownReminders = true;
 
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        print('No user logged in');
         return;
       }
 
-      print('User ID: ${user.uid}');
-
-      final now = DateTime.now();
-      final todayStart = DateTime(now.year, now.month, now.day);
-      final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
-
-      print('Checking events from $todayStart to $todayEnd');
-
       // Get all events for today from the Events collection
+      final now = DateTime.now();
       final eventsSnapshot =
           await FirebaseFirestore.instance
               .collection('Events')
               .where('userID', isEqualTo: user.uid)
               .get();
-
-      print('Total events found: ${eventsSnapshot.docs.length}');
 
       List<Map<String, dynamic>> todayEvents = [];
 
@@ -100,17 +83,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
             eventDate = DateTime.parse(data['eventDate']);
           } else {
             continue;
-          }
-
-          print('Event: ${data['title']} - Date: $eventDate');
-
-          // Check if event is today
+          }// Check if event is today
           if (eventDate.year == now.year &&
               eventDate.month == now.month &&
-              eventDate.day == now.day) {
-            print('  -> This event is today!');
-
-            // Get the associated task to check if it's completed
+              eventDate.day == now.day) {// Get the associated task to check if it's completed
             if (data['taskID'] != null &&
                 data['taskID'].toString().isNotEmpty) {
               try {
@@ -125,12 +101,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 if (taskDoc.exists) {
                   final taskData = taskDoc.data();
                   if (taskData != null && taskData['isCompleted'] == true) {
-                    print('  -> Task is already completed, skipping');
                     continue;
                   }
                 }
               } catch (e) {
-                print('  -> Error checking task status: $e');
+                // Ignore errors checking task completion status
               }
             }
 
@@ -142,11 +117,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
       }
 
       if (todayEvents.isEmpty) {
-        print('No events due today');
         return;
       }
-
-      print('Found ${todayEvents.length} events due today');
 
       // Sort by start time
       todayEvents.sort((a, b) {
@@ -158,16 +130,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
       // Show reminders one by one
       for (int i = 0; i < todayEvents.length; i++) {
         if (!mounted) {
-          print('Widget no longer mounted, stopping reminders');
           break;
         }
         await _showTaskReminder(todayEvents[i], i + 1, todayEvents.length);
       }
-
-      print('All reminders shown successfully');
-    } catch (e, stackTrace) {
-      print('Error showing reminders: $e');
-      print('Stack trace: $stackTrace');
+    } catch (e) {
+      // Ignore errors loading reminders
     }
   }
 
@@ -177,11 +145,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
     int total,
   ) async {
     if (!mounted) {
-      print('Widget not mounted, cannot show reminder');
       return;
     }
-
-    print('Displaying notification $current of $total: ${task['title']}');
 
     try {
       // Ensure we have a valid overlay
@@ -196,22 +161,17 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ),
       );
 
-      overlayState.insert(overlayEntry);
-      print('Notification inserted into overlay');
-
-      // Auto-dismiss after 3.5 seconds
+      overlayState.insert(overlayEntry);// Auto-dismiss after 3.5 seconds
       await Future.delayed(Duration(milliseconds: 3500));
 
       if (overlayEntry.mounted) {
         overlayEntry.remove();
-        print('Notification removed');
       }
 
       // Small delay before showing next reminder for smooth transition
       await Future.delayed(Duration(milliseconds: 300));
-    } catch (e, stackTrace) {
-      print('Error showing notification: $e');
-      print('Stack trace: $stackTrace');
+    } catch (e) {
+      // Ignore errors displaying reminders
     }
   }
 
@@ -375,6 +335,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               if (confirm == true) {
                 try {
                   await FirebaseAuth.instance.signOut();
+                  if (!mounted) return;
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => Loginscreen()),
@@ -749,6 +710,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                             await todoServices.deleteTodo(
                                               todo.todoID,
                                             );
+                                            if (!mounted) return;
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
@@ -906,7 +868,7 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
+                      color: Colors.black.withValues(alpha: 0.15),
                       blurRadius: 30,
                       offset: Offset(0, 15),
                       spreadRadius: -5,
@@ -921,14 +883,14 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                       decoration: BoxDecoration(
                         color:
                             isDark
-                                ? Color(0xFF1E1E1E).withOpacity(0.95)
-                                : Colors.white.withOpacity(0.95),
+                                ? Color(0xFF1E1E1E).withValues(alpha: 0.95)
+                                : Colors.white.withValues(alpha: 0.95),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color:
                               isDark
-                                  ? Colors.white.withOpacity(0.1)
-                                  : Colors.black.withOpacity(0.05),
+                                  ? Colors.white.withValues(alpha: 0.1)
+                                  : Colors.black.withValues(alpha: 0.05),
                           width: 1.5,
                         ),
                       ),
@@ -945,7 +907,7 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                 gradient: LinearGradient(
                                   colors: [
                                     categoryColor,
-                                    categoryColor.withOpacity(0.6),
+                                    categoryColor.withValues(alpha: 0.6),
                                   ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
@@ -970,8 +932,8 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
-                                            categoryColor.withOpacity(0.2),
-                                            categoryColor.withOpacity(0.1),
+                                            categoryColor.withValues(alpha: 0.2),
+                                            categoryColor.withValues(alpha: 0.1),
                                           ],
                                         ),
                                         borderRadius: BorderRadius.circular(12),
@@ -997,7 +959,7 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                               color:
                                                   isDark
                                                       ? Colors.white
-                                                          .withOpacity(0.9)
+                                                          .withValues(alpha: 0.9)
                                                       : Color(0xFF2D3748),
                                               letterSpacing: 0.3,
                                             ),
@@ -1012,7 +974,7 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                               color:
                                                   isDark
                                                       ? Colors.white
-                                                          .withOpacity(0.5)
+                                                          .withValues(alpha: 0.5)
                                                       : Color(0xFF718096),
                                             ),
                                           ),
@@ -1027,11 +989,11 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                         decoration: BoxDecoration(
                                           color:
                                               isDark
-                                                  ? Colors.white.withOpacity(
-                                                    0.1,
+                                                  ? Colors.white.withValues(
+                                                    alpha: 0.1,
                                                   )
-                                                  : Colors.black.withOpacity(
-                                                    0.05,
+                                                  : Colors.black.withValues(
+                                                    alpha: 0.05,
                                                   ),
                                           borderRadius: BorderRadius.circular(
                                             8,
@@ -1042,8 +1004,8 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                           size: 16,
                                           color:
                                               isDark
-                                                  ? Colors.white.withOpacity(
-                                                    0.6,
+                                                  ? Colors.white.withValues(
+                                                    alpha: 0.6,
                                                   )
                                                   : Color(0xFF718096),
                                         ),
@@ -1061,14 +1023,14 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                     gradient: LinearGradient(
                                       colors: [
                                         isDark
-                                            ? Colors.white.withOpacity(0.05)
-                                            : Colors.black.withOpacity(0.05),
+                                            ? Colors.white.withValues(alpha: 0.05)
+                                            : Colors.black.withValues(alpha: 0.05),
                                         isDark
-                                            ? Colors.white.withOpacity(0.1)
-                                            : Colors.black.withOpacity(0.1),
+                                            ? Colors.white.withValues(alpha: 0.1)
+                                            : Colors.black.withValues(alpha: 0.1),
                                         isDark
-                                            ? Colors.white.withOpacity(0.05)
-                                            : Colors.black.withOpacity(0.05),
+                                            ? Colors.white.withValues(alpha: 0.05)
+                                            : Colors.black.withValues(alpha: 0.05),
                                       ],
                                     ),
                                   ),
@@ -1162,9 +1124,9 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(isDark ? 0.15 : 0.1),
+        color: color.withValues(alpha: isDark ? 0.15 : 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1198,10 +1160,10 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.2), color.withOpacity(0.15)],
+          colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.15)],
         ),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.4), width: 1),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

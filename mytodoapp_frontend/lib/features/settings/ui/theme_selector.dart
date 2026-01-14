@@ -33,7 +33,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
     });
 
     await _themeService.saveThemeColor(colorName);
-
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -47,6 +47,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
 
     // Wait a bit before popping to show the snackbar
     await Future.delayed(Duration(milliseconds: 500));
+    if (!mounted) return;
     Navigator.pop(context, true); // Return true to indicate theme changed
   }
 
@@ -89,9 +90,9 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                     Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(isDark ? 0.2 : 0.1),
+                        color: Colors.blue.withValues(alpha: isDark ? 0.2 : 0.1),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         children: [
@@ -109,7 +110,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                                 fontSize: 13,
                                 color:
                                     isDark
-                                        ? Colors.white.withOpacity(0.9)
+                                        ? Colors.white.withValues(alpha: 0.9)
                                         : Colors.black87,
                               ),
                             ),
@@ -128,7 +129,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                         fontWeight: FontWeight.w600,
                         color:
                             isDark
-                                ? Colors.white.withOpacity(0.9)
+                                ? Colors.white.withValues(alpha: 0.9)
                                 : Colors.grey[700],
                       ),
                     ),
@@ -173,8 +174,8 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                                 BoxShadow(
                                   color:
                                       isSelected
-                                          ? color.withOpacity(0.3)
-                                          : Colors.black.withOpacity(0.05),
+                                          ? color.withValues(alpha: 0.3)
+                                          : Colors.black.withValues(alpha: 0.05),
                                   blurRadius: isSelected ? 12 : 5,
                                   offset: Offset(0, isSelected ? 4 : 2),
                                 ),
@@ -192,7 +193,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: color.withOpacity(0.5),
+                                        color: color.withValues(alpha: 0.5),
                                         blurRadius: 8,
                                         offset: Offset(0, 2),
                                       ),
@@ -222,7 +223,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                                         isSelected
                                             ? color
                                             : (isDark
-                                                ? Colors.white.withOpacity(0.9)
+                                                ? Colors.white.withValues(alpha: 0.9)
                                                 : Colors.black87),
                                   ),
                                 ),
@@ -244,7 +245,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                         fontWeight: FontWeight.w600,
                         color:
                             isDark
-                                ? Colors.white.withOpacity(0.9)
+                                ? Colors.white.withValues(alpha: 0.9)
                                 : Colors.grey[700],
                       ),
                     ),
@@ -257,7 +258,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 10,
                             offset: Offset(0, 2),
                           ),

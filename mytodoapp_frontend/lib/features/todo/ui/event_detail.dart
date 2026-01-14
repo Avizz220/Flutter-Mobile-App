@@ -219,10 +219,10 @@ class EventDetailScreen extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColor.accentColor.withOpacity(0.1),
+                  color: AppColor.accentColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(
-                    color: AppColor.accentColor.withOpacity(0.3),
+                    color: AppColor.accentColor.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Column(
@@ -267,7 +267,7 @@ class EventDetailScreen extends StatelessWidget {
                         fontSize: 14,
                         color:
                             isDark
-                                ? Colors.white.withOpacity(0.9)
+                                ? Colors.white.withValues(alpha: 0.9)
                                 : Colors.black87,
                         height: 1.5,
                       ),
@@ -349,9 +349,9 @@ class EventDetailScreen extends StatelessWidget {
               margin: EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: categoryColor.withOpacity(0.1),
+                color: categoryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: categoryColor.withOpacity(0.3)),
+                border: Border.all(color: categoryColor.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [

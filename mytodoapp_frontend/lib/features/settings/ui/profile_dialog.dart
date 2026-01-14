@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -97,7 +96,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
               _isLoading
                   ? CircleAvatar(
                     radius: 60,
-                    backgroundColor: AppColor.accentColor.withOpacity(0.2),
+                    backgroundColor: AppColor.accentColor.withValues(alpha: 0.2),
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
                         AppColor.accentColor,
@@ -113,7 +112,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
                   )
                   : CircleAvatar(
                     radius: 60,
-                    backgroundColor: AppColor.accentColor.withOpacity(0.2),
+                    backgroundColor: AppColor.accentColor.withValues(alpha: 0.2),
                     child: Icon(
                       Icons.person,
                       size: 60,

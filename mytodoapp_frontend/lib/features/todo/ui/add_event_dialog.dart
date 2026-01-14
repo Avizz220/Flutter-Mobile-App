@@ -537,7 +537,7 @@ class _AddEventDialogState extends State<AddEventDialog> {
                           );
 
                           await eventServices.addEvent(event);
-
+                          if (!mounted) return;
                           Navigator.pop(context, true);
 
                           ScaffoldMessenger.of(context).showSnackBar(

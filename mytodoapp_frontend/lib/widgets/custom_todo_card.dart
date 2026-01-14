@@ -38,7 +38,7 @@ class _CustomeTodoCardState extends State<CustomeTodoCard> {
         margin: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: AppColor.accentColor.withOpacity(0.5)),
+          border: Border.all(color: AppColor.accentColor.withValues(alpha: 0.5)),
         ),
         child: Row(
           children: [

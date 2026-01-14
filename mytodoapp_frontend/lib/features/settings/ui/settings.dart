@@ -86,6 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _logout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => Loginscreen()),
@@ -151,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: Offset(0, 2),
                   ),
@@ -168,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       )
                       : CircleAvatar(
                         radius: 35,
-                        backgroundColor: AppColor.accentColor.withOpacity(0.2),
+                        backgroundColor: AppColor.accentColor.withValues(alpha: 0.2),
                         child: Icon(
                           Icons.person,
                           size: 40,
@@ -319,7 +320,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 5,
             offset: Offset(0, 2),
           ),
@@ -330,7 +331,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: (iconColor ?? AppColor.accentColor).withOpacity(0.1),
+            color: (iconColor ?? AppColor.accentColor).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: iconColor ?? AppColor.accentColor, size: 24),
@@ -370,7 +371,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 5,
             offset: Offset(0, 2),
           ),
@@ -381,7 +382,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColor.accentColor.withOpacity(0.1),
+            color: AppColor.accentColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
@@ -422,7 +423,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 : Switch(
                   value: _isDarkMode,
                   onChanged: _toggleDarkMode,
-                  activeColor: AppColor.accentColor,
+                  activeThumbColor: AppColor.accentColor,
                 ),
       ),
     );

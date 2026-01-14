@@ -24,14 +24,15 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.isDarkMode});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MyApp> createState() => MyAppState();
 
   // Static method to access state from anywhere
-  static _MyAppState? of(BuildContext context) =>
-      context.findAncestorStateOfType<_MyAppState>();
+  static MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<MyAppState>();
 }
 
-class _MyAppState extends State<MyApp> {
+// Make the state class public so it can be referenced externally
+class MyAppState extends State<MyApp> {
   late ThemeMode _themeMode;
 
   @override

@@ -95,7 +95,7 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
               },
               calendarStyle: CalendarStyle(
                 todayDecoration: BoxDecoration(
-                  color: AppColor.accentColor.withOpacity(0.3),
+                  color: AppColor.accentColor.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 selectedDecoration: BoxDecoration(
@@ -412,10 +412,10 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
       decoration: BoxDecoration(
         color: isDark ? Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: categoryColor.withOpacity(0.3), width: 2),
+        border: Border.all(color: categoryColor.withValues(alpha: 0.3), width: 2),
         boxShadow: [
           BoxShadow(
-            color: categoryColor.withOpacity(0.1),
+            color: categoryColor.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -427,7 +427,7 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: categoryColor.withOpacity(0.1),
+              color: categoryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -493,7 +493,7 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: categoryColor.withOpacity(0.15),
+                    color: categoryColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
