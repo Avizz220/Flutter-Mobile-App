@@ -371,33 +371,36 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(height: 10),
                         Text(
-                          userName.isNotEmpty ? "Welcome $userName" : "Welcome",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "Poppins",
-                            fontSize: 24,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                        ),
-                        Text(
-                          "Have a nice day",
+                          userName.isNotEmpty ? "Welcome back," : "Welcome",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontFamily: "Poppins",
-                            fontSize: 12,
+                            fontSize: 16,
+                            color: isDark ? Colors.white60 : Colors.grey[600],
                           ),
                         ),
-                        SizedBox(height: 20),
                         Text(
-                          "Today progress",
+                          userName.isNotEmpty ? userName : "",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontFamily: "Poppins",
+                            fontSize: 28,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: 25),
+                        Text(
+                          "Today's Progress",
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontFamily: "Poppins",
-                            fontSize: 20,
+                            fontSize: 18,
+                            color: isDark ? Colors.white : Colors.black87,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        SizedBox(height: 12),
                         StreamBuilder<List<TodoModel>>(
                           stream: todoServices.getTodos(),
                           builder: (context, snapshot) {
@@ -420,46 +423,90 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             int percentage = (progress * 100).round();
 
                             return Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              height: 76,
+                              padding: EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage('assets/images/menu.png'),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColor.accentColor,
+                                    AppColor.accentColor.withOpacity(0.8),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColor.accentColor.withOpacity(0.3),
+                                    blurRadius: 12,
+                                    offset: Offset(0, 6),
+                                  ),
+                                ],
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Spacer(),
-                                  Text(
-                                    "Today progress",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: "Poppins",
-                                      fontSize: 10,
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.trending_up,
+                                        color: Colors.white,
+                                        size: 24,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Daily Progress",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: "Poppins",
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Text(
+                                          "$completedCount / $totalCount",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontFamily: "Poppins",
+                                            fontSize: 13,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: LinearProgressIndicator(
+                                      value: progress,
+                                      minHeight: 8,
                                       color: Colors.white,
+                                      backgroundColor: Colors.white.withOpacity(0.3),
                                     ),
                                   ),
-                                  SizedBox(height: 5),
-                                  LinearProgressIndicator(
-                                    value: progress,
-                                    color: Colors.white,
-                                    backgroundColor: AppColor.progressbgcolor,
-                                  ),
-                                  SizedBox(height: 8),
+                                  SizedBox(height: 12),
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      "$percentage%",
+                                      "$percentage% Complete",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w400,
+                                        fontWeight: FontWeight.w500,
                                         fontFamily: "Poppins",
-                                        fontSize: 10,
+                                        fontSize: 14,
                                         color: Colors.white,
                                       ),
                                     ),
                                   ),
-                                  SizedBox(height: 8),
                                 ],
                               ),
                             );
@@ -470,21 +517,31 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     width: screenwidth,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Daily Tasks",
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.task_alt,
+                              color: AppColor.accentColor,
+                              size: 24,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              "Daily Tasks",
+                              style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 16),
                         StreamBuilder<List<TodoModel>>(
                           stream: todoServices.getTodos(),
                           builder: (context, snapshot) {

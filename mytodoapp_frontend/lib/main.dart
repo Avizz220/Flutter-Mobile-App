@@ -56,35 +56,112 @@ class MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: AppColor.accentColor,
-        scaffoldBackgroundColor: Colors.grey[50],
+        scaffoldBackgroundColor: Color(0xFFF8F9FA),
         colorScheme: ColorScheme.light(
           primary: AppColor.accentColor,
           secondary: AppColor.accentColor,
+          surface: Colors.white,
         ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.black87,
           elevation: 0,
+          centerTitle: false,
+          titleTextStyle: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        cardTheme: CardTheme(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          color: Colors.white,
         ),
         cardColor: Colors.white,
         useMaterial3: true,
+        textTheme: TextTheme(
+          headlineLarge: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w700,
+            fontSize: 32,
+            color: Colors.black87,
+          ),
+          headlineMedium: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: Colors.black87,
+          ),
+          bodyLarge: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+          bodyMedium: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 14,
+            color: Colors.black87,
+          ),
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primaryColor: AppColor.accentColor,
-        scaffoldBackgroundColor: Color(0xFF121212),
+        scaffoldBackgroundColor: Color(0xFF0D0D0D),
         colorScheme: ColorScheme.dark(
           primary: AppColor.accentColor,
           secondary: AppColor.accentColor,
-          surface: Color(0xFF1E1E1E),
+          surface: Color(0xFF1A1A1A),
         ),
         appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFF1E1E1E),
+          backgroundColor: Color(0xFF1A1A1A),
           foregroundColor: Colors.white,
           elevation: 0,
+          centerTitle: false,
+          titleTextStyle: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
         ),
-        cardColor: Color(0xFF1E1E1E),
+        cardTheme: CardTheme(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          color: Color(0xFF1A1A1A),
+        ),
+        cardColor: Color(0xFF1A1A1A),
         useMaterial3: true,
+        textTheme: TextTheme(
+          headlineLarge: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w700,
+            fontSize: 32,
+            color: Colors.white,
+          ),
+          headlineMedium: TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            fontSize: 24,
+            color: Colors.white,
+          ),
+          bodyLarge: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            color: Colors.white,
+          ),
+          bodyMedium: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 14,
+            color: Colors.white,
+          ),
+        ),
       ),
       home: SplashScreen(),
     );

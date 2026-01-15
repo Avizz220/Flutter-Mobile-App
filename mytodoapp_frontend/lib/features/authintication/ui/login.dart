@@ -157,14 +157,17 @@ class _LoginscreenState extends State<Loginscreen> {
                                     controller: emailcontroller,
                                     labeltext: "Email",
                                     bordercolor: AppColor.textfieldbordercolor,
+                                    prefixIcon: Icons.email_rounded,
                                   ),
                                   SizedBox(height: 15),
                                   CustomTextField(
                                     controller: passwordcontroller,
                                     labeltext: "Password",
                                     bordercolor: AppColor.textfieldbordercolor,
+                                    prefixIcon: Icons.lock_rounded,
+                                    obscureText: true,
                                   ),
-                                  SizedBox(height: 15),
+                                  SizedBox(height: 20),
                                   isLoading
                                       ? SizedBox(
                                         height: 35,

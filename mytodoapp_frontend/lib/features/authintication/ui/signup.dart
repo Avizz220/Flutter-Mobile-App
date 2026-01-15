@@ -107,18 +107,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: namecontroller,
                             labeltext: "Name",
                             bordercolor: Colors.white,
+                            prefixIcon: Icons.person_rounded,
                           ),
                           SizedBox(height: 15),
                           CustomTextField(
                             controller: emailcontroller,
                             labeltext: "Email",
                             bordercolor: Colors.white,
+                            prefixIcon: Icons.email_rounded,
                           ),
                           SizedBox(height: 15),
                           CustomTextField(
                             controller: passwordcontroller,
                             labeltext: "Password",
                             bordercolor: Colors.white,
+                            prefixIcon: Icons.lock_rounded,
+                            obscureText: true,
                           ),
                           SizedBox(height: 25),
                           isLoading

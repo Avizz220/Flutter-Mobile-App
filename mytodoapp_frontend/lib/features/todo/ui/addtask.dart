@@ -25,79 +25,83 @@ class _MyWidgetState extends State<Addtask> {
     double screenwidth = MediaQuery.of(context).size.width;
     double screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: AppColor.accentColor,
+      backgroundColor: isDark ? Color(0xFF0D0D0D) : Color(0xFFF8F9FA),
       appBar: AppBar(
-        centerTitle: true, //This is how we can cnter the title
-        toolbarHeight:
-            120, //This is the way that we can give height for the appbar
-        backgroundColor:
-            AppColor
-                .accentColor, //We can also give the background colour for this
+        centerTitle: true,
+        toolbarHeight: 80,
+        backgroundColor: AppColor.accentColor,
         title: Text(
-          "Add Task",
+          "Add New Task",
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 20,
             fontFamily: "Poppins",
             color: Colors.white,
+            letterSpacing: 0.5,
           ),
         ),
-        leading: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 15),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
+        leading: Padding(
+          padding: EdgeInsets.only(left: 15),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 45,
+                width: 45,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 18,
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 16,
-                      color: AppColor.accentColor,
-                    ),
                   ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 30),
         width: screenwidth,
-        height: screenheight - 120,
+        height: screenheight - 80,
         decoration: BoxDecoration(
-          //This is how we decorate our container using decoration
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(50),
-            topRight: Radius.circular(50),
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
-          color: isDark ? Color(0xFF121212) : Colors.white,
+          color: isDark ? Color(0xFF1A1A1A) : Colors.white,
         ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "Title",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  fontFamily: "Poppins",
-                  color: isDark ? Colors.white : AppColor.accentColor,
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.title_rounded,
+                    color: AppColor.accentColor,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "Title",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      fontFamily: "Poppins",
+                      color: isDark ? Colors.white : AppColor.accentColor,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 12),
               TextField(
                 controller: titlecontroller,
                 style: TextStyle(
@@ -134,17 +138,27 @@ class _MyWidgetState extends State<Addtask> {
                   ),
                 ),
               ),
-              SizedBox(height: 40),
-              Text(
-                "Description",
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                  fontFamily: "Poppins",
-                  color: isDark ? Colors.white : AppColor.accentColor,
-                ),
+              SizedBox(height: 25),
+              Row(
+                children: [
+                  Icon(
+                    Icons.description_rounded,
+                    color: AppColor.accentColor,
+                    size: 20,
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    "Description",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      fontFamily: "Poppins",
+                      color: isDark ? Colors.white : AppColor.accentColor,
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 12),
               TextField(
                 minLines: 5,
                 maxLines: 8,
@@ -353,23 +367,10 @@ class _MyWidgetState extends State<Addtask> {
                         );
                       }
                     },
-                    child: Container(
-                      width: screenwidth,
-                      height: 55,
-                      decoration: BoxDecoration(
-                        color: AppColor.accentColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Create Task',
-                          style: TextStyle(
-                            fontFamily: "Poppins",
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                    child: CustomeButton(
+                      btnwidth: screenwidth,
+                      btntext: 'Create Task',
+                      icon: Icons.add_task_rounded,
                     ),
                   ),
             ],
