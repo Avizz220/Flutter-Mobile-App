@@ -5,8 +5,12 @@ import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/features/authintication/bloc/auth_bloc.dart';
 import 'package:mytodoapp_frontend/features/authintication/ui/signup.dart';
 import 'package:mytodoapp_frontend/features/home/ui/homepage.dart';
+import 'package:mytodoapp_frontend/features/todo/ui/calendar_events.dart';
+import 'package:mytodoapp_frontend/services/notification_services_db.dart';
+import 'package:mytodoapp_frontend/services/theme_service.dart';
 import 'package:mytodoapp_frontend/widgets/custom_button.dart';
 import 'package:mytodoapp_frontend/widgets/custom_textfield.dart';
+import 'package:mytodoapp_frontend/widgets/task_notification_banner.dart';
 
 class Loginscreen extends StatefulWidget {
   const Loginscreen({super.key});
@@ -20,7 +24,80 @@ class _LoginscreenState extends State<Loginscreen> {
   TextEditingController passwordcontroller = TextEditingController();
 
   final AuthBloc authBloc = AuthBloc();
+  final NotificationServices notificationServices = NotificationServices();
+  final ThemeService themeService = ThemeService();
   bool isLoading = false;
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  // Show notification banners after login
+  Future<void> _showPendingNotifications(BuildContext context) async {
+    try {
+      final notifications =
+          await notificationServices.getUnreadTaskNotifications();
+
+      if (notifications.isEmpty) return;
+
+      for (var notification in notifications) {
+        if (!mounted) break;
+
+        _overlayEntry = OverlayEntry(
+          builder:
+              (context) => Positioned(
+                top: MediaQuery.of(context).padding.top + 10,
+                left: 0,
+                right: 0,
+                child: TaskNotificationBanner(
+                  notification: notification,
+                  onOk: () async {
+                    _removeOverlay();
+                    await notificationServices.dismissNotification(
+                      notification.notificationID,
+                    );
+                    if (mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => CalendarEventsScreen(
+                                taskId: notification.taskID,
+                              ),
+                        ),
+                      );
+                    }
+                  },
+                  onCancel: () async {
+                    _removeOverlay();
+                    await notificationServices.dismissNotification(
+                      notification.notificationID,
+                    );
+                  },
+                ),
+              ),
+        );
+
+        Overlay.of(context).insert(_overlayEntry!);
+
+        while (_overlayEntry != null && mounted) {
+          await Future.delayed(Duration(milliseconds: 100));
+        }
+
+        await Future.delayed(Duration(milliseconds: 300));
+      }
+    } catch (e) {
+      debugPrint('Error showing notifications: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +133,13 @@ class _LoginscreenState extends State<Loginscreen> {
               MaterialPageRoute(builder: (context) => HomePageScreen()),
               (Route<dynamic> route) => false,
             );
+
+            // Show pending notifications after a short delay
+            Future.delayed(Duration(milliseconds: 800), () {
+              if (mounted) {
+                _showPendingNotifications(context);
+              }
+            });
           } else if (state is SignInErrorState) {
             setState(() {
               isLoading = false;

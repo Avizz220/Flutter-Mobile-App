@@ -21,6 +21,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final ThemeService _themeService = ThemeService();
   bool _isDarkMode = false;
   bool _isLoadingTheme = true;
+  bool _remindersEnabled = true;
   String? _profilePhotoBase64;
 
   @override
@@ -28,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _loadThemeMode();
     _loadProfilePhoto();
+    _loadRemindersSetting();
   }
 
   Future<void> _loadProfilePhoto() async {
@@ -57,6 +59,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _isDarkMode = isDark;
       _isLoadingTheme = false;
     });
+  }
+
+  Future<void> _loadRemindersSetting() async {
+    final enabled = await _themeService.getRemindersEnabled();
+    setState(() {
+      _remindersEnabled = enabled;
+    });
+  }
+
+  Future<void> _toggleReminders(bool value) async {
+    setState(() {
+      _remindersEnabled = value;
+    });
+
+    await _themeService.saveRemindersEnabled(value);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            value ? 'Reminders enabled' : 'Reminders disabled',
+            style: TextStyle(fontFamily: 'Poppins'),
+          ),
+          backgroundColor: AppColor.accentColor,
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   Future<void> _toggleDarkMode(bool value) async {
@@ -257,6 +287,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           SizedBox(height: 10),
 
+          // Reminders Toggle
+          _buildRemindersToggle(isDark),
+
+          SizedBox(height: 10),
+
           _buildSettingsTile(
             context: context,
             icon: Icons.palette_outlined,
@@ -424,6 +459,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: _toggleDarkMode,
                   activeColor: AppColor.accentColor,
                 ),
+      ),
+    );
+  }
+
+  Widget _buildRemindersToggle(bool isDark) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: isDark ? Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 5,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColor.accentColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            _remindersEnabled
+                ? Icons.notifications_active
+                : Icons.notifications_off,
+            color: AppColor.accentColor,
+            size: 24,
+          ),
+        ),
+        title: Text(
+          'Event Reminders',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: isDark ? Colors.white : Colors.black,
+          ),
+        ),
+        subtitle: Text(
+          'Show notifications for upcoming events',
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 13,
+            color: Colors.grey[600],
+          ),
+        ),
+        trailing: Switch(
+          value: _remindersEnabled,
+          onChanged: _toggleReminders,
+          activeColor: AppColor.accentColor,
+        ),
       ),
     );
   }

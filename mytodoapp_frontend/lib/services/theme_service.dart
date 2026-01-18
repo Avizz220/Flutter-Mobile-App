@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeService {
   static const String _themeKey = 'selected_theme_color';
   static const String _themeModeKey = 'theme_mode';
+  static const String _remindersEnabledKey = 'reminders_enabled';
 
   // Available theme colors
   static final Map<String, Color> themeColors = {
@@ -44,5 +45,17 @@ class ThemeService {
   Future<bool> getThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_themeModeKey) ?? false; // Default is light mode
+  }
+
+  // Save reminders enabled state
+  Future<void> saveRemindersEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_remindersEnabledKey, enabled);
+  }
+
+  // Get reminders enabled state
+  Future<bool> getRemindersEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_remindersEnabledKey) ?? true; // Default is enabled
   }
 }

@@ -128,4 +128,37 @@ class NotificationServices {
       return Stream.value(0);
     }
   }
+
+  // Get unread task notifications for login
+  Future<List<NotificationModel>> getUnreadTaskNotifications() async {
+    try {
+      final user = auth.currentUser;
+      if (user == null) return [];
+
+      final snapshot =
+          await firestore
+              .collection('Notifications')
+              .where('userID', isEqualTo: user.uid)
+              .where('isRead', isEqualTo: false)
+              .where('type', isEqualTo: 'task')
+              .orderBy('createdAt', descending: true)
+              .limit(5)
+              .get();
+
+      return snapshot.docs.map((doc) {
+        return NotificationModel.fromJson(doc.data());
+      }).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Dismiss notification
+  Future<void> dismissNotification(String notificationID) async {
+    try {
+      await markAsRead(notificationID);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

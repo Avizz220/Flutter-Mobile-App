@@ -7,7 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarEventsScreen extends StatefulWidget {
-  const CalendarEventsScreen({super.key});
+  final String? taskId;
+
+  const CalendarEventsScreen({super.key, this.taskId});
 
   @override
   State<CalendarEventsScreen> createState() => _CalendarEventsScreenState();
@@ -18,6 +20,61 @@ class _CalendarEventsScreenState extends State<CalendarEventsScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.taskId != null) {
+      _findAndFocusTask();
+    }
+  }
+
+  Future<void> _findAndFocusTask() async {
+    await Future.delayed(Duration(milliseconds: 500));
+
+    eventServices
+        .getEvents()
+        .first
+        .then((events) {
+          if (events.isEmpty) return;
+
+          final eventIndex = events.indexWhere(
+            (e) => e.taskID == widget.taskId,
+          );
+          if (eventIndex == -1) return;
+
+          final event = events[eventIndex];
+
+          if (mounted) {
+            setState(() {
+              _selectedDay = event.eventDate;
+              _focusedDay = event.eventDate;
+            });
+
+            Future.delayed(Duration(milliseconds: 300), () {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Task: ${event.title}',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: Colors.white,
+                      ),
+                    ),
+                    backgroundColor: AppColor.accentColor,
+                    duration: Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            });
+          }
+        })
+        .catchError((error) {
+          debugPrint('Error finding task: $error');
+        });
+  }
 
   @override
   Widget build(BuildContext context) {

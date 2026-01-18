@@ -13,6 +13,7 @@ import 'package:mytodoapp_frontend/model/todo_model.dart';
 import 'package:mytodoapp_frontend/services/todo_services.dart';
 import 'package:mytodoapp_frontend/services/notification_services_db.dart';
 import 'package:mytodoapp_frontend/services/event_services.dart';
+import 'package:mytodoapp_frontend/services/theme_service.dart';
 import 'package:mytodoapp_frontend/widgets/custom_todo_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -51,6 +52,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Future<void> _checkAndShowTodayReminders() async {
     print('Starting reminder check...');
+
+    // Check if reminders are enabled
+    final themeService = ThemeService();
+    final remindersEnabled = await themeService.getRemindersEnabled();
+
+    if (!remindersEnabled) {
+      print('Reminders are disabled in settings, skipping');
+      return;
+    }
 
     // Small delay to ensure UI is ready
     await Future.delayed(Duration(milliseconds: 500));
@@ -187,24 +197,57 @@ class _HomePageScreenState extends State<HomePageScreen> {
       // Ensure we have a valid overlay
       final overlayState = Overlay.of(context);
 
-      final overlayEntry = OverlayEntry(
+      late OverlayEntry overlayEntry;
+      bool isDismissed = false;
+
+      overlayEntry = OverlayEntry(
         builder:
             (context) => _TopNotificationBanner(
               task: task,
               current: current,
               total: total,
+              onOk: () {
+                if (!isDismissed && overlayEntry.mounted) {
+                  isDismissed = true;
+                  overlayEntry.remove();
+                  // Navigate to calendar with task focus
+                  final taskId = task['taskID'];
+                  if (taskId != null && taskId.toString().isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => CalendarEventsScreen(taskId: taskId),
+                      ),
+                    );
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CalendarEventsScreen(),
+                      ),
+                    );
+                  }
+                }
+              },
+              onCancel: () {
+                if (!isDismissed && overlayEntry.mounted) {
+                  isDismissed = true;
+                  overlayEntry.remove();
+                }
+              },
             ),
       );
 
       overlayState.insert(overlayEntry);
       print('Notification inserted into overlay');
 
-      // Auto-dismiss after 3.5 seconds
-      await Future.delayed(Duration(milliseconds: 3500));
+      // Auto-dismiss after 8 seconds (longer to allow reading and interaction)
+      await Future.delayed(Duration(milliseconds: 8000));
 
-      if (overlayEntry.mounted) {
+      if (!isDismissed && overlayEntry.mounted) {
         overlayEntry.remove();
-        print('Notification removed');
+        print('Notification auto-dismissed');
       }
 
       // Small delay before showing next reminder for smooth transition
@@ -826,11 +869,15 @@ class _TopNotificationBanner extends StatefulWidget {
   final Map<String, dynamic> task;
   final int current;
   final int total;
+  final VoidCallback onOk;
+  final VoidCallback onCancel;
 
   const _TopNotificationBanner({
     required this.task,
     required this.current,
     required this.total,
+    required this.onOk,
+    required this.onCancel,
   });
 
   @override
@@ -903,33 +950,49 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 30,
-                      offset: Offset(0, 15),
+                      color: categoryColor.withOpacity(0.15),
+                      blurRadius: 40,
+                      offset: Offset(0, 10),
+                      spreadRadius: 0,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: Offset(0, 5),
                       spreadRadius: -5,
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                     child: Container(
                       decoration: BoxDecoration(
-                        color:
-                            isDark
-                                ? Color(0xFF1E1E1E).withOpacity(0.95)
-                                : Colors.white.withOpacity(0.95),
-                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors:
+                              isDark
+                                  ? [
+                                    Color(0xFF2D2D2D).withOpacity(0.95),
+                                    Color(0xFF1A1A1A).withOpacity(0.98),
+                                  ]
+                                  : [
+                                    Colors.white.withOpacity(0.98),
+                                    Color(0xFFFAFAFA).withOpacity(0.95),
+                                  ],
+                        ),
+                        borderRadius: BorderRadius.circular(24),
                         border: Border.all(
                           color:
                               isDark
-                                  ? Colors.white.withOpacity(0.1)
-                                  : Colors.black.withOpacity(0.05),
-                          width: 1.5,
+                                  ? Colors.white.withOpacity(0.15)
+                                  : categoryColor.withOpacity(0.1),
+                          width: 2,
                         ),
                       ),
                       child: Stack(
@@ -940,16 +1003,25 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                             top: 0,
                             bottom: 0,
                             child: Container(
-                              width: 5,
+                              width: 6,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
                                     categoryColor,
-                                    categoryColor.withOpacity(0.6),
+                                    categoryColor.withOpacity(0.7),
+                                    categoryColor.withOpacity(0.4),
                                   ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
+                                  stops: [0.0, 0.6, 1.0],
                                 ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: categoryColor.withOpacity(0.5),
+                                    blurRadius: 8,
+                                    spreadRadius: 0,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -966,20 +1038,35 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                   children: [
                                     // Icon with gradient background
                                     Container(
-                                      padding: EdgeInsets.all(10),
+                                      padding: EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
                                           colors: [
-                                            categoryColor.withOpacity(0.2),
-                                            categoryColor.withOpacity(0.1),
+                                            categoryColor.withOpacity(0.25),
+                                            categoryColor.withOpacity(0.12),
                                           ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
                                         ),
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: categoryColor.withOpacity(0.3),
+                                          width: 1.5,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: categoryColor.withOpacity(
+                                              0.2,
+                                            ),
+                                            blurRadius: 8,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
                                       ),
                                       child: Icon(
                                         Icons.event_available_rounded,
                                         color: categoryColor,
-                                        size: 22,
+                                        size: 24,
                                       ),
                                     ),
                                     SizedBox(width: 12),
@@ -992,14 +1079,14 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                             'Upcoming Event',
                                             style: TextStyle(
                                               fontFamily: 'Poppins',
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 13,
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 13.5,
                                               color:
                                                   isDark
                                                       ? Colors.white
-                                                          .withOpacity(0.9)
-                                                      : Color(0xFF2D3748),
-                                              letterSpacing: 0.3,
+                                                          .withOpacity(0.95)
+                                                      : Color(0xFF1A202C),
+                                              letterSpacing: 0.5,
                                             ),
                                           ),
                                           SizedBox(height: 2),
@@ -1019,40 +1106,10 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                         ],
                                       ),
                                     ),
-                                    // Dismiss button
-                                    GestureDetector(
-                                      onTap: () => _controller.reverse(),
-                                      child: Container(
-                                        padding: EdgeInsets.all(6),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              isDark
-                                                  ? Colors.white.withOpacity(
-                                                    0.1,
-                                                  )
-                                                  : Colors.black.withOpacity(
-                                                    0.05,
-                                                  ),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.close_rounded,
-                                          size: 16,
-                                          color:
-                                              isDark
-                                                  ? Colors.white.withOpacity(
-                                                    0.6,
-                                                  )
-                                                  : Color(0xFF718096),
-                                        ),
-                                      ),
-                                    ),
                                   ],
                                 ),
 
-                                SizedBox(height: 14),
+                                SizedBox(height: 16),
 
                                 // Divider
                                 Container(
@@ -1081,13 +1138,14 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                   title,
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
                                     color:
                                         isDark
                                             ? Colors.white
-                                            : Color(0xFF1A202C),
-                                    height: 1.3,
+                                            : Color(0xFF0F172A),
+                                    height: 1.4,
+                                    letterSpacing: -0.3,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -1135,6 +1193,183 @@ class _TopNotificationBannerState extends State<_TopNotificationBanner>
                                         color: categoryColor,
                                         isDark: isDark,
                                       ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 16),
+
+                                // Action Buttons
+                                Row(
+                                  children: [
+                                    // Cancel Button
+                                    Expanded(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            _controller.reverse().then((_) {
+                                              widget.onCancel();
+                                            });
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          splashColor:
+                                              isDark
+                                                  ? Colors.white.withOpacity(
+                                                    0.1,
+                                                  )
+                                                  : Colors.black.withOpacity(
+                                                    0.05,
+                                                  ),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 14,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors:
+                                                    isDark
+                                                        ? [
+                                                          Color(
+                                                            0xFF3A3A3A,
+                                                          ).withOpacity(0.6),
+                                                          Color(
+                                                            0xFF2A2A2A,
+                                                          ).withOpacity(0.4),
+                                                        ]
+                                                        : [
+                                                          Color(0xFFF7F7F7),
+                                                          Color(0xFFEDEDED),
+                                                        ],
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              border: Border.all(
+                                                color:
+                                                    isDark
+                                                        ? Colors.white
+                                                            .withOpacity(0.15)
+                                                        : Colors.black
+                                                            .withOpacity(0.1),
+                                                width: 1.5,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.close_rounded,
+                                                  size: 19,
+                                                  color:
+                                                      isDark
+                                                          ? Colors.white
+                                                              .withOpacity(0.8)
+                                                          : Color(0xFF64748B),
+                                                ),
+                                                SizedBox(width: 7),
+                                                Text(
+                                                  'Dismiss',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 14.5,
+                                                    fontWeight: FontWeight.w700,
+                                                    color:
+                                                        isDark
+                                                            ? Colors.white
+                                                                .withOpacity(
+                                                                  0.8,
+                                                                )
+                                                            : Color(0xFF64748B),
+                                                    letterSpacing: 0.3,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    // OK Button
+                                    Expanded(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            _controller.reverse().then((_) {
+                                              widget.onOk();
+                                            });
+                                          },
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          splashColor: Colors.white.withOpacity(
+                                            0.3,
+                                          ),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 14,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  categoryColor,
+                                                  categoryColor.withOpacity(
+                                                    0.85,
+                                                  ),
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: categoryColor
+                                                      .withOpacity(0.4),
+                                                  blurRadius: 12,
+                                                  offset: Offset(0, 6),
+                                                  spreadRadius: 0,
+                                                ),
+                                                BoxShadow(
+                                                  color: categoryColor
+                                                      .withOpacity(0.2),
+                                                  blurRadius: 6,
+                                                  offset: Offset(0, 2),
+                                                  spreadRadius: 0,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.calendar_today_rounded,
+                                                  size: 19,
+                                                  color: Colors.white,
+                                                ),
+                                                SizedBox(width: 7),
+                                                Text(
+                                                  'View Event',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 14.5,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white,
+                                                    letterSpacing: 0.3,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
