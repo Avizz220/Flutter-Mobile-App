@@ -143,7 +143,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                         crossAxisCount: 2,
                         crossAxisSpacing: 15,
                         mainAxisSpacing: 15,
-                        childAspectRatio: 1.5,
+                        childAspectRatio: 1.1,
                       ),
                       itemCount: ThemeService.themeColors.length,
                       itemBuilder: (context, index) {
@@ -157,7 +157,10 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                           onTap: () => _saveTheme(colorName),
                           child: AnimatedContainer(
                             duration: Duration(milliseconds: 200),
-                            padding: EdgeInsets.all(20),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 20,
+                            ),
                             decoration: BoxDecoration(
                               color: isDark ? Color(0xFF1E1E1E) : Colors.white,
                               borderRadius: BorderRadius.circular(15),
@@ -183,6 +186,7 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 // Color Circle
                                 Container(
@@ -212,9 +216,12 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
                                 // Color Name
                                 Text(
                                   colorName,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     fontWeight:
                                         isSelected
                                             ? FontWeight.w600
