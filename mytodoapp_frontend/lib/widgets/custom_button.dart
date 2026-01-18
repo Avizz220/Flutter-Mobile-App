@@ -29,9 +29,10 @@ class _CustomeButtonState extends State<CustomeButton>
       duration: Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -73,12 +74,8 @@ class _CustomeButtonState extends State<CustomeButton>
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.icon != null) ..[
-                  Icon(
-                    widget.icon,
-                    color: Colors.white,
-                    size: 22,
-                  ),
+                if (widget.icon != null) ...[
+                  Icon(widget.icon, color: Colors.white, size: 22),
                   SizedBox(width: 8),
                 ],
                 Text(

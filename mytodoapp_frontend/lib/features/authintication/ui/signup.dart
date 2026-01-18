@@ -18,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController namecontroller = TextEditingController();
   TextEditingController emailcontroller = TextEditingController();
   TextEditingController passwordcontroller = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
 
   final AuthBloc authBloc = AuthBloc();
   bool isLoading = false;
@@ -78,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Image.asset('assets/images/signup.png'),
                 ),
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Container(
                     width: screenwidth,
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -124,11 +125,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             prefixIcon: Icons.lock_rounded,
                             obscureText: true,
                           ),
+                          SizedBox(height: 15),
+                          CustomTextField(
+                            controller: confirmPasswordController,
+                            labeltext: "Confirm Password",
+                            bordercolor: Colors.white,
+                            prefixIcon: Icons.lock_outline_rounded,
+                            obscureText: true,
+                          ),
                           SizedBox(height: 25),
                           isLoading
                               ? Center(child: CircularProgressIndicator())
                               : GestureDetector(
                                 onTap: () {
+                                  // Validate passwords match
+                                  if (passwordcontroller.text !=
+                                      confirmPasswordController.text) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Passwords do not match!',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
+                                  // Validate fields are not empty
+                                  if (namecontroller.text.isEmpty ||
+                                      emailcontroller.text.isEmpty ||
+                                      passwordcontroller.text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Please fill in all fields',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+
                                   final user = UserModel(
                                     userID: '',
                                     name: namecontroller.text,
