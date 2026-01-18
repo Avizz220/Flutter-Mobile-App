@@ -113,7 +113,479 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
+  Future<void> _showRatingDialog(BuildContext context) async {
+    int selectedRating = 0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              elevation: 10,
+              backgroundColor: Colors.transparent,
+              insetPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 400,
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors:
+                        isDark
+                            ? [Color(0xFF2D2D2D), Color(0xFF1A1A1A)]
+                            : [Colors.white, Color(0xFFFAFAFA)],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColor.accentColor.withOpacity(0.2),
+                      blurRadius: 30,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Icon with gradient background
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColor.accentColor.withOpacity(0.2),
+                              AppColor.accentColor.withOpacity(0.1),
+                            ],
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.star_rounded,
+                          size: 42,
+                          color: AppColor.accentColor,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+
+                      // Title
+                      Text(
+                        'Rate Our App',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white : Color(0xFF1A202C),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+
+                      // Description
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          'How would you rate your experience with our app?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color:
+                                isDark
+                                    ? Colors.white.withOpacity(0.7)
+                                    : Color(0xFF64748B),
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 24),
+
+                      // Star Rating
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        children: List.generate(5, (index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 200),
+                              curve: Curves.easeInOut,
+                              child: Icon(
+                                selectedRating > index
+                                    ? Icons.star_rounded
+                                    : Icons.star_outline_rounded,
+                                size: selectedRating > index ? 42 : 38,
+                                color:
+                                    selectedRating > index
+                                        ? AppColor.accentColor
+                                        : isDark
+                                        ? Colors.white.withOpacity(0.3)
+                                        : Colors.grey[400],
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                      SizedBox(height: 24),
+
+                      // Buttons
+                      Row(
+                        children: [
+                          // Skip Button
+                          Expanded(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.of(dialogContext).pop();
+                                  _showLogoutConfirmation(context);
+                                },
+                                borderRadius: BorderRadius.circular(14),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isDark
+                                            ? Colors.white.withOpacity(0.08)
+                                            : Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color:
+                                          isDark
+                                              ? Colors.white.withOpacity(0.15)
+                                              : Colors.grey[300]!,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Skip',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          isDark
+                                              ? Colors.white.withOpacity(0.7)
+                                              : Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 12),
+
+                          // Submit Button
+                          Expanded(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap:
+                                    selectedRating > 0
+                                        ? () {
+                                          Navigator.of(dialogContext).pop();
+                                          _submitRating(
+                                            context,
+                                            selectedRating,
+                                          );
+                                        }
+                                        : null,
+                                borderRadius: BorderRadius.circular(14),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  decoration: BoxDecoration(
+                                    gradient:
+                                        selectedRating > 0
+                                            ? LinearGradient(
+                                              colors: [
+                                                AppColor.accentColor,
+                                                AppColor.accentColor
+                                                    .withOpacity(0.8),
+                                              ],
+                                            )
+                                            : null,
+                                    color:
+                                        selectedRating == 0
+                                            ? (isDark
+                                                ? Colors.white.withOpacity(0.1)
+                                                : Colors.grey[300])
+                                            : null,
+                                    borderRadius: BorderRadius.circular(14),
+                                    boxShadow:
+                                        selectedRating > 0
+                                            ? [
+                                              BoxShadow(
+                                                color: AppColor.accentColor
+                                                    .withOpacity(0.3),
+                                                blurRadius: 12,
+                                                offset: Offset(0, 6),
+                                              ),
+                                            ]
+                                            : null,
+                                  ),
+                                  child: Text(
+                                    'Submit',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color:
+                                          selectedRating > 0
+                                              ? Colors.white
+                                              : (isDark
+                                                  ? Colors.white.withOpacity(
+                                                    0.3,
+                                                  )
+                                                  : Colors.grey[500]),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _submitRating(BuildContext context, int rating) async {
+    // Here you can save the rating to Firebase or your backend
+    print('User rated the app: $rating stars');
+
+    // Show thank you message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 12),
+            Text(
+              'Thank you for your feedback!',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    // Proceed to logout confirmation
+    _showLogoutConfirmation(context);
+  }
+
+  Future<void> _showLogoutConfirmation(BuildContext context) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          elevation: 10,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors:
+                    isDark
+                        ? [Color(0xFF2D2D2D), Color(0xFF1A1A1A)]
+                        : [Colors.white, Color(0xFFFAFAFA)],
+              ),
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.2),
+                  blurRadius: 30,
+                  offset: Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.red.withOpacity(0.2),
+                        Colors.red.withOpacity(0.1),
+                      ],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.logout_rounded,
+                    size: 50,
+                    color: Colors.red,
+                  ),
+                ),
+                SizedBox(height: 24),
+
+                // Title
+                Text(
+                  'Logout Confirmation',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : Color(0xFF1A202C),
+                  ),
+                ),
+                SizedBox(height: 12),
+
+                // Message
+                Text(
+                  'Are you sure you want to logout from your account?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color:
+                        isDark
+                            ? Colors.white.withOpacity(0.7)
+                            : Color(0xFF64748B),
+                    height: 1.5,
+                  ),
+                ),
+                SizedBox(height: 32),
+
+                // Buttons
+                Row(
+                  children: [
+                    // Cancel Button
+                    Expanded(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => Navigator.of(dialogContext).pop(false),
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color:
+                                  isDark
+                                      ? Colors.white.withOpacity(0.08)
+                                      : Colors.grey[200],
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color:
+                                    isDark
+                                        ? Colors.white.withOpacity(0.15)
+                                        : Colors.grey[300]!,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    isDark
+                                        ? Colors.white.withOpacity(0.7)
+                                        : Color(0xFF64748B),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+
+                    // Logout Button
+                    Expanded(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => Navigator.of(dialogContext).pop(true),
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.red,
+                                  Colors.red.withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.red.withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              'Logout',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      _performLogout(context);
+    }
+  }
+
+  Future<void> _performLogout(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
       Navigator.pushReplacement(
@@ -128,6 +600,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       );
     }
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    _showRatingDialog(context);
   }
 
   @override
