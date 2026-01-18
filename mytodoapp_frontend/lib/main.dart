@@ -4,6 +4,8 @@ import 'package:mytodoapp_frontend/firebase_options.dart';
 import 'package:mytodoapp_frontend/splash_page.dart';
 import 'package:mytodoapp_frontend/contants/colors.dart';
 import 'package:mytodoapp_frontend/services/theme_service.dart';
+import 'package:provider/provider.dart';
+import 'package:mytodoapp_frontend/providers/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +17,12 @@ Future<void> main() async {
   final isDarkMode = await themeService.getThemeMode();
   AppColor.updateAccentColor(ThemeService.getColorFromName(savedTheme));
 
-  runApp(MyApp(isDarkMode: isDarkMode));
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(isDarkMode: isDarkMode),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -48,17 +55,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch for theme changes
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       themeMode: _themeMode,
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: AppColor.accentColor,
+        primaryColor: themeProvider.accentColor,
         scaffoldBackgroundColor: Colors.grey[50],
         colorScheme: ColorScheme.light(
-          primary: AppColor.accentColor,
-          secondary: AppColor.accentColor,
+          primary: themeProvider.accentColor,
+          secondary: themeProvider.accentColor,
         ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
@@ -70,11 +80,11 @@ class _MyAppState extends State<MyApp> {
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
-        primaryColor: AppColor.accentColor,
+        primaryColor: themeProvider.accentColor,
         scaffoldBackgroundColor: Color(0xFF121212),
         colorScheme: ColorScheme.dark(
-          primary: AppColor.accentColor,
-          secondary: AppColor.accentColor,
+          primary: themeProvider.accentColor,
+          secondary: themeProvider.accentColor,
           surface: Color(0xFF1E1E1E),
         ),
         appBarTheme: AppBarTheme(

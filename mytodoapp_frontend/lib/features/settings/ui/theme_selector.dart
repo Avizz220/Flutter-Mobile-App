@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mytodoapp_frontend/services/theme_service.dart';
+import 'package:provider/provider.dart';
+import 'package:mytodoapp_frontend/providers/theme_provider.dart';
 
 class ThemeSelectorScreen extends StatefulWidget {
   const ThemeSelectorScreen({super.key});
@@ -32,7 +34,9 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
       _selectedTheme = colorName;
     });
 
-    await _themeService.saveThemeColor(colorName);
+    // Update theme instantly using Provider
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    await themeProvider.setTheme(colorName);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -41,13 +45,9 @@ class _ThemeSelectorScreenState extends State<ThemeSelectorScreen> {
           style: TextStyle(fontFamily: 'Poppins'),
         ),
         backgroundColor: ThemeService.getColorFromName(colorName),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 1),
       ),
     );
-
-    // Wait a bit before popping to show the snackbar
-    await Future.delayed(Duration(milliseconds: 500));
-    Navigator.pop(context, true); // Return true to indicate theme changed
   }
 
   @override
