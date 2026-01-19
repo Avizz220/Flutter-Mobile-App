@@ -138,13 +138,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ? Center(child: CircularProgressIndicator())
                               : GestureDetector(
                                 onTap: () {
-                                  // Validate passwords match
-                                  if (passwordcontroller.text !=
-                                      confirmPasswordController.text) {
+                                  // Validate fields are not empty
+                                  if (namecontroller.text.isEmpty ||
+                                      emailcontroller.text.isEmpty ||
+                                      passwordcontroller.text.isEmpty ||
+                                      confirmPasswordController.text.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Passwords do not match!',
+                                          'Please fill in all fields',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         backgroundColor: Colors.red,
@@ -153,14 +155,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     return;
                                   }
 
-                                  // Validate fields are not empty
-                                  if (namecontroller.text.isEmpty ||
-                                      emailcontroller.text.isEmpty ||
-                                      passwordcontroller.text.isEmpty) {
+                                  // Validate passwords match
+                                  if (passwordcontroller.text !=
+                                      confirmPasswordController.text) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          'Please fill in all fields',
+                                          'Passwords do not match!',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         backgroundColor: Colors.red,
